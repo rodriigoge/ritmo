@@ -1,23 +1,45 @@
 # Ritmo
 
-Ritmo is a mobile application focused on task management and habit tracking.
+Ritmo e um aplicativo mobile simples para criar, organizar e acompanhar tarefas recorrentes no ritmo de cada pessoa.
 
-The app allows users to create recurring tasks, define how often they should be completed, and track their progress in a simple and visual way.
+## Estrutura
 
-Users can create tasks with a name, frequency, and an optional emoji or icon. If no icon is selected, a default `#` symbol is used.
+```text
+ritmo/
+├── apps/
+│   └── mobile/        # React Native + Expo
+├── packages/
+│   └── shared/        # tipos compartilhados, futuramente
+└── README.md
+```
 
-On the home screen, users can view their tasks and track completion across the last five days, including the current day. They can also update previous days if needed.
+## Story 1 - Base mobile
 
-The application supports both light and dark themes, providing a clean and comfortable user experience.
+A base inicial do app mobile ja inclui:
 
-## Main Features
+- Expo com TypeScript em `apps/mobile`
+- Estrutura de pastas para app, navegacao, telas, tema e componentes
+- Navegacao inicial com tabs para Hoje, Tarefas e Ajustes
+- Tema global com suporte automatico a claro/escuro
+- Paleta do produto: `#F0EFF4`, `#EEDBD1`, `#1E1E1E`
+- Fonte Bricolage Grotesque configurada via `@expo-google-fonts/bricolage-grotesque`
 
-* User authentication with email and password
-* Google social login
-* Create, edit, and delete tasks
-* Daily, weekly, and monthly task frequency
-* Emoji or icon selection for each task
-* Default `#` icon when no icon is selected
-* Track task completion for the last five days
-* Light and dark theme support
-* Simple, clean, and mobile-first interface
+## Comandos
+
+Instale as dependencias antes de executar o app:
+
+```bash
+npm install
+```
+
+Execute o projeto mobile:
+
+```bash
+npm run mobile
+```
+
+Validacao de TypeScript:
+
+```bash
+npm run mobile:typecheck
+```

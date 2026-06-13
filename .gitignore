@@ -1,0 +1,13 @@
+node_modules/
+.expo/
+dist/
+build/
+coverage/
+docs/
+*.log
+.env
+.env.*
+!.env.example
+
+apps/*/node_modules/
+packages/*/node_modules/
