@@ -82,7 +82,11 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
   }
 
   function handleCreateAccount() {
-    Alert.alert("Criar conta", "A tela de cadastro será adicionada em uma próxima história.");
+    navigation.navigate("Register");
+  }
+
+  function handleGooglePlaceholder() {
+    Alert.alert("Entrar com Google", "O login com Google será implementado na Story 8.");
   }
 
   return (
@@ -179,7 +183,7 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
 
             <Pressable
               accessibilityRole="button"
-              onPress={enterApp}
+              onPress={handleGooglePlaceholder}
               style={({ pressed }) => [
                 styles.googleButton,
                 {
