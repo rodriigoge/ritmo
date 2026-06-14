@@ -1,3 +1,4 @@
+import { AntDesign } from "@expo/vector-icons";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useMemo, useState } from "react";
 import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
@@ -33,19 +34,6 @@ function validateLogin(email: string, password: string): LoginErrors {
   return errors;
 }
 
-function GoogleIcon() {
-  return (
-    <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={styles.googleIcon}>
-      <View style={[styles.googleArc, styles.googleArcBlue]} />
-      <View style={[styles.googleArc, styles.googleArcRed]} />
-      <View style={[styles.googleArc, styles.googleArcYellow]} />
-      <View style={[styles.googleArc, styles.googleArcGreen]} />
-      <View style={styles.googleCutout} />
-      <View style={styles.googleBar} />
-    </View>
-  );
-}
-
 export function LoginScreen({ navigation }: LoginScreenProps) {
   const { theme } = useAppTheme();
   const [email, setEmail] = useState("");
@@ -76,7 +64,7 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }]}>
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.keyboard}>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.keyboard}>
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           <View style={styles.content}>
             <Text style={[styles.brand, { color: theme.colors.text, fontFamily: theme.typography.fontFamily.bold }]}>Ritmo</Text>
@@ -92,7 +80,7 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
                   keyboardType="email-address"
                   onChangeText={setEmail}
                   placeholder="seu@email.com"
-                  placeholderTextColor={theme.colors.text}
+                  placeholderTextColor={theme.colors.subtle}
                   returnKeyType="next"
                   selectionColor={theme.colors.primary}
                   style={[
@@ -125,7 +113,11 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
                   ]}
                 >
                   <TextInput
+                    autoCapitalize="none"
+                    autoCorrect={false}
                     onChangeText={setPassword}
+                    placeholder="Digite sua senha"
+                    placeholderTextColor={theme.colors.subtle}
                     returnKeyType="done"
                     secureTextEntry={!showPassword}
                     selectionColor={theme.colors.primary}
@@ -174,7 +166,7 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
                 }
               ]}
             >
-              <GoogleIcon />
+              <AntDesign color="#4285F4" name="google" size={22} style={styles.googleIcon} />
               <Text style={[styles.googleText, { color: theme.colors.text, fontFamily: theme.typography.fontFamily.bold }]}>Entrar com Google</Text>
             </Pressable>
           </View>
@@ -262,8 +254,8 @@ const styles = StyleSheet.create({
     borderRadius: 14
   },
   primaryButtonText: {
-    fontSize: 16,
-    lineHeight: 22
+    fontSize: 18,
+    lineHeight: 24
   },
   dividerRow: {
     flexDirection: "row",
@@ -290,56 +282,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18
   },
   googleIcon: {
-    width: 22,
-    height: 22,
     marginRight: 14
-  },
-  googleArc: {
-    position: "absolute",
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    borderWidth: 4
-  },
-  googleArcBlue: {
-    borderColor: "#4285F4"
-  },
-  googleArcRed: {
-    borderColor: "#EA4335",
-    borderRightColor: "transparent",
-    borderBottomColor: "transparent"
-  },
-  googleArcYellow: {
-    borderColor: "#FBBC05",
-    borderTopColor: "transparent",
-    borderRightColor: "transparent",
-    borderBottomColor: "transparent",
-    transform: [{ rotate: "-42deg" }]
-  },
-  googleArcGreen: {
-    borderColor: "#34A853",
-    borderTopColor: "transparent",
-    borderLeftColor: "transparent",
-    borderRightColor: "transparent",
-    transform: [{ rotate: "-18deg" }]
-  },
-  googleCutout: {
-    position: "absolute",
-    top: 6,
-    left: 6,
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: "#FFFFFF"
-  },
-  googleBar: {
-    position: "absolute",
-    top: 9,
-    right: 1,
-    width: 11,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: "#4285F4"
   },
   googleText: {
     fontSize: 16,
