@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import type { RootStackParamList } from "../navigation/routes";
+import { hasCompletedOnboarding } from "../storage/onboardingProgress";
 import { useAppTheme } from "../theme";
 
 type SplashScreenProps = NativeStackScreenProps<RootStackParamList, "Splash">;
@@ -14,7 +15,9 @@ export function SplashScreen({ navigation }: SplashScreenProps) {
   const { theme } = useAppTheme();
 
   const continueToApp = useCallback(() => {
-    navigation.replace("Onboarding");
+    void hasCompletedOnboarding().then((completedOnboarding) => {
+      navigation.replace(completedOnboarding ? "MainTabs" : "Onboarding");
+    });
   }, [navigation]);
 
   useEffect(() => {

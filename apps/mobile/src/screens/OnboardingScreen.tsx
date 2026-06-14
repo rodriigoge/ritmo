@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button } from "../components/Button";
 import type { RootStackParamList } from "../navigation/routes";
+import { completeOnboarding } from "../storage/onboardingProgress";
 import { productColors, useAppTheme } from "../theme";
 
 type OnboardingScreenProps = NativeStackScreenProps<RootStackParamList, "Onboarding">;
@@ -53,13 +54,14 @@ export function OnboardingScreen({ navigation }: OnboardingScreenProps) {
     [currentStep, theme.colors.primary, theme.colors.secondary]
   );
 
-  function finishOnboarding() {
+  async function finishOnboarding() {
+    await completeOnboarding();
     navigation.replace("MainTabs");
   }
 
   function handleContinue() {
     if (isLastStep) {
-      finishOnboarding();
+      void finishOnboarding();
       return;
     }
 
