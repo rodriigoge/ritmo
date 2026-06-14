@@ -56,7 +56,7 @@ export function OnboardingScreen({ navigation }: OnboardingScreenProps) {
 
   async function finishOnboarding() {
     await completeOnboarding();
-    navigation.replace("MainTabs");
+    navigation.replace("Login");
   }
 
   function handleContinue() {

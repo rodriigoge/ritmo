@@ -1,5 +1,15 @@
 import type { ReactNode } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text, View, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  type PressableProps,
+  type StyleProp,
+  type TextStyle,
+  type ViewStyle
+} from "react-native";
 
 import { useAppTheme } from "../theme";
 
@@ -13,6 +23,7 @@ type ButtonProps = PressableProps & {
   loading?: boolean;
   fullWidth?: boolean;
   style?: StyleProp<ViewStyle>;
+  titleStyle?: StyleProp<TextStyle>;
 };
 
 export function Button({
@@ -24,6 +35,7 @@ export function Button({
   fullWidth = true,
   disabled,
   style,
+  titleStyle,
   ...pressableProps
 }: ButtonProps) {
   const { theme } = useAppTheme();
@@ -54,7 +66,7 @@ export function Button({
       ) : (
         <View style={styles.content}>
           {leftAccessory}
-          <Text style={[styles.title, { color, fontFamily: theme.typography.fontFamily.bold }]} numberOfLines={1}>
+          <Text style={[styles.title, { color, fontFamily: theme.typography.fontFamily.bold }, titleStyle]} numberOfLines={1}>
             {title}
           </Text>
           {rightAccessory}

@@ -4,7 +4,9 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import type { MainTabParamList, RootStackParamList } from "./routes";
 import { HomeScreen } from "../screens/HomeScreen";
+import { LoginScreen } from "../screens/LoginScreen";
 import { OnboardingScreen } from "../screens/OnboardingScreen";
+import { RegisterPlaceholderScreen } from "../screens/RegisterPlaceholderScreen";
 import { SettingsScreen } from "../screens/SettingsScreen";
 import { SplashScreen } from "../screens/SplashScreen";
 import { TasksScreen } from "../screens/TasksScreen";
@@ -47,6 +49,8 @@ export function AppNavigator() {
       <RootStack.Navigator screenOptions={{ headerShown: false }}>
         <RootStack.Screen name="Splash" component={SplashScreen} />
         <RootStack.Screen name="Onboarding" component={OnboardingScreen} />
+        <RootStack.Screen name="Login" component={LoginScreen} />
+        <RootStack.Screen name="Register" component={RegisterPlaceholderScreen} />
         <RootStack.Screen name="MainTabs" component={MainTabs} />
       </RootStack.Navigator>
     </NavigationContainer>

@@ -16,7 +16,7 @@ export function SplashScreen({ navigation }: SplashScreenProps) {
 
   const continueToApp = useCallback(() => {
     void hasCompletedOnboarding().then((completedOnboarding) => {
-      navigation.replace(completedOnboarding ? "MainTabs" : "Onboarding");
+      navigation.replace(completedOnboarding ? "Login" : "Onboarding");
     });
   }, [navigation]);
 
