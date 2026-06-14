@@ -33,6 +33,19 @@ function validateLogin(email: string, password: string): LoginErrors {
   return errors;
 }
 
+function GoogleIcon() {
+  return (
+    <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={styles.googleIcon}>
+      <View style={[styles.googleArc, styles.googleArcBlue]} />
+      <View style={[styles.googleArc, styles.googleArcRed]} />
+      <View style={[styles.googleArc, styles.googleArcYellow]} />
+      <View style={[styles.googleArc, styles.googleArcGreen]} />
+      <View style={styles.googleCutout} />
+      <View style={styles.googleBar} />
+    </View>
+  );
+}
+
 export function LoginScreen({ navigation }: LoginScreenProps) {
   const { theme } = useAppTheme();
   const [email, setEmail] = useState("");
@@ -113,8 +126,6 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
                 >
                   <TextInput
                     onChangeText={setPassword}
-                    placeholder="••••••••"
-                    placeholderTextColor={theme.colors.text}
                     returnKeyType="done"
                     secureTextEntry={!showPassword}
                     selectionColor={theme.colors.primary}
@@ -135,7 +146,13 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
               </View>
             </View>
 
-            <Button disabled={submitted && hasErrors} onPress={handleSubmit} style={styles.primaryButton} title="Entrar" />
+            <Button
+              disabled={submitted && hasErrors}
+              onPress={handleSubmit}
+              style={styles.primaryButton}
+              title="Entrar"
+              titleStyle={styles.primaryButtonText}
+            />
 
             <View style={styles.dividerRow}>
               <View style={[styles.divider, { backgroundColor: productColors.brown }]} />
@@ -157,7 +174,7 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
                 }
               ]}
             >
-              <Text style={[styles.googleMark, { fontFamily: theme.typography.fontFamily.bold }]}>G</Text>
+              <GoogleIcon />
               <Text style={[styles.googleText, { color: theme.colors.text, fontFamily: theme.typography.fontFamily.bold }]}>Entrar com Google</Text>
             </Pressable>
           </View>
@@ -212,8 +229,8 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     borderWidth: 1,
     paddingHorizontal: 22,
-    fontSize: 15,
-    lineHeight: 20
+    fontSize: 16,
+    lineHeight: 22
   },
   passwordInput: {
     minHeight: 60,
@@ -226,10 +243,10 @@ const styles = StyleSheet.create({
   },
   passwordTextInput: {
     flex: 1,
-    minHeight: 58,
+    height: 58,
     paddingVertical: 0,
-    fontSize: 15,
-    lineHeight: 20
+    fontSize: 16,
+    lineHeight: 22
   },
   showPassword: {
     fontSize: 14,
@@ -243,6 +260,10 @@ const styles = StyleSheet.create({
   primaryButton: {
     minHeight: 60,
     borderRadius: 14
+  },
+  primaryButtonText: {
+    fontSize: 16,
+    lineHeight: 22
   },
   dividerRow: {
     flexDirection: "row",
@@ -268,11 +289,57 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 18
   },
-  googleMark: {
-    color: "#4285F4",
-    fontSize: 21,
-    lineHeight: 24,
-    marginRight: 16
+  googleIcon: {
+    width: 22,
+    height: 22,
+    marginRight: 14
+  },
+  googleArc: {
+    position: "absolute",
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 4
+  },
+  googleArcBlue: {
+    borderColor: "#4285F4"
+  },
+  googleArcRed: {
+    borderColor: "#EA4335",
+    borderRightColor: "transparent",
+    borderBottomColor: "transparent"
+  },
+  googleArcYellow: {
+    borderColor: "#FBBC05",
+    borderTopColor: "transparent",
+    borderRightColor: "transparent",
+    borderBottomColor: "transparent",
+    transform: [{ rotate: "-42deg" }]
+  },
+  googleArcGreen: {
+    borderColor: "#34A853",
+    borderTopColor: "transparent",
+    borderLeftColor: "transparent",
+    borderRightColor: "transparent",
+    transform: [{ rotate: "-18deg" }]
+  },
+  googleCutout: {
+    position: "absolute",
+    top: 6,
+    left: 6,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: "#FFFFFF"
+  },
+  googleBar: {
+    position: "absolute",
+    top: 9,
+    right: 1,
+    width: 11,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: "#4285F4"
   },
   googleText: {
     fontSize: 16,
