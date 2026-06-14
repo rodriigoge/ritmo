@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "Ritmo",
+    "slug": "ritmo",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "ritmo",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#F0EFF4"
+      }
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
