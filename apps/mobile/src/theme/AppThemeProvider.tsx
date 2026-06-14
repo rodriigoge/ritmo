@@ -3,10 +3,12 @@ import { createContext, type PropsWithChildren, useContext, useMemo } from "reac
 import { useColorScheme } from "react-native";
 
 import { darkColors, lightColors } from "./colors";
+import { spacing } from "./spacing";
 import { typography } from "./typography";
 
 type AppTheme = {
   colors: typeof lightColors;
+  spacing: typeof spacing;
   typography: typeof typography;
 };
 
@@ -30,6 +32,7 @@ export function AppThemeProvider({ children }: PropsWithChildren) {
       colorScheme,
       theme: {
         colors,
+        spacing,
         typography
       },
       navigationTheme: {
