@@ -27,6 +27,7 @@ const AnimatedPath = Animated.createAnimatedComponent(Path);
 // "M7 12.5 L10.5 16 L17 9" is about 14.2 units long.
 const CHECK_PATH = 'M7 12.5 L10.5 16 L17 9';
 const CHECK_LENGTH = 15;
+const CELL_SIZE = 40;
 
 type DayStatusProps = {
   date: LocalDate;
@@ -79,8 +80,7 @@ export function DayStatus({
         draw.setValue(0);
         Animated.timing(draw, {
           toValue: 1,
-          duration: 180,
-          delay: 40,
+          duration: 150,
           easing: Easing.out(Easing.quad),
           useNativeDriver: false,
         }).start();
@@ -137,54 +137,85 @@ export function DayStatus({
           useNativeDriver: true,
         }).start()
       }
-      style={[styles.container, disabled && styles.disabled]}
+      style={[
+        styles.container,
+        compact && styles.compactContainer,
+        disabled && styles.disabled,
+      ]}
     >
-      {!compact && (
-        <Text style={styles.weekday}>
-          {formatLocalDate(date, { weekday: 'short' })}
-        </Text>
-      )}
-      <Text style={[styles.day, isToday && styles.todayLabel]}>
-        {formatLocalDate(date, { day: '2-digit' })}
-      </Text>
-      <View>
-        <Animated.View style={{ transform: [{ scale: press }] }}>
-          <Animated.View
-            style={[
-              styles.mark,
-              completed && styles.completed,
-              { transform: [{ scale: pop }] },
-            ]}
-          >
-            {completed && (
-              <Svg
-                width={controls.iconSize}
-                height={controls.iconSize}
-                viewBox="0 0 24 24"
-                style={styles.check}
+      {compact ? (
+        // Calendar cell: the day number sits inside the circle.
+        <View>
+          <Animated.View style={{ transform: [{ scale: press }] }}>
+            <Animated.View
+              style={[
+                styles.cell,
+                isToday && !completed && styles.todayCell,
+                completed && styles.completed,
+                { transform: [{ scale: pop }] },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.cellText,
+                  isToday && styles.todayLabel,
+                  completed && styles.completedText,
+                ]}
               >
-                <AnimatedPath
-                  d={CHECK_PATH}
-                  stroke={colors.onAction}
-                  strokeWidth={2.6}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  fill="none"
-                  strokeDasharray={CHECK_LENGTH}
-                  strokeDashoffset={draw.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [CHECK_LENGTH, 0],
-                  })}
-                />
-              </Svg>
-            )}
-            {isToday && !compact && (
-              <View pointerEvents="none" style={styles.todayRing} />
-            )}
+                {formatLocalDate(date, { day: 'numeric' })}
+              </Text>
+            </Animated.View>
           </Animated.View>
-        </Animated.View>
-        <CompletionBurst trigger={burst.count} big={burst.big} />
-      </View>
+          <CompletionBurst trigger={burst.count} big={burst.big} />
+        </View>
+      ) : (
+        <>
+          <Text style={styles.weekday}>
+            {formatLocalDate(date, { weekday: 'short' })}
+          </Text>
+          <Text style={[styles.day, isToday && styles.todayLabel]}>
+            {formatLocalDate(date, { day: '2-digit' })}
+          </Text>
+          <View>
+            <Animated.View style={{ transform: [{ scale: press }] }}>
+              <Animated.View
+                style={[
+                  styles.mark,
+                  completed && styles.completed,
+                  { transform: [{ scale: pop }] },
+                ]}
+              >
+                {completed && (
+                  <Svg
+                    width={controls.iconSize}
+                    height={controls.iconSize}
+                    viewBox="0 0 24 24"
+                    style={styles.check}
+                  >
+                    <AnimatedPath
+                      d={CHECK_PATH}
+                      stroke={colors.onAction}
+                      strokeWidth={2.6}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      fill="none"
+                      strokeDasharray={CHECK_LENGTH}
+                      strokeDashoffset={draw.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [CHECK_LENGTH, 0],
+                      })}
+                    />
+                  </Svg>
+                )}
+                {isToday && (
+                  <View pointerEvents="none" style={styles.todayRing} />
+                )}
+              </Animated.View>
+            </Animated.View>
+            <CompletionBurst trigger={burst.count} big={burst.big} />
+          </View>
+        </>
+      )}
     </Pressable>
   );
 }
@@ -197,6 +228,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     gap: spacing.xs,
   },
+  compactContainer: { paddingVertical: 3, minHeight: CELL_SIZE + 6 },
   disabled: { opacity: controls.disabledOpacity },
   weekday: { ...typography.caption, color: colors.textSecondary },
   day: {
@@ -217,6 +249,24 @@ const styles = StyleSheet.create({
     backgroundColor: colors.completed,
     borderColor: colors.completed,
   },
+  cell: {
+    width: CELL_SIZE,
+    height: CELL_SIZE,
+    borderRadius: CELL_SIZE / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  todayCell: {
+    backgroundColor: colors.chip,
+    borderWidth: 1.5,
+    borderColor: colors.ink,
+  },
+  cellText: {
+    ...typography.body,
+    color: colors.textPrimary,
+    fontVariant: ['tabular-nums'],
+  },
+  completedText: { color: colors.onAction, fontFamily: fontFamilies.semibold },
   // The border takes 1.5 units, so pull the full-size check back onto it.
   check: { position: 'absolute', top: -1.5, left: -1.5 },
   todayRing: {

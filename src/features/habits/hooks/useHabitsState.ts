@@ -146,6 +146,18 @@ export function useHabitsState(repository: HabitRepository) {
     );
   }
 
+  function announceRecord(habitId: string) {
+    if (recordTimer.current) clearTimeout(recordTimer.current);
+    setRecordFeedback({ habitId, id: ++recordId.current });
+    void Haptics.notificationAsync(
+      Haptics.NotificationFeedbackType.Success,
+    ).catch(() => {});
+    recordTimer.current = setTimeout(() => {
+      setRecordFeedback(undefined);
+      recordTimer.current = null;
+    }, 850);
+  }
+
   function toggleDay(habitId: string, date: LocalDate) {
     const habit = history.current.find((item) => item.id === habitId);
     if (!habit || deleting.current.has(habitId)) return;
@@ -171,6 +183,15 @@ export function useHabitsState(repository: HabitRepository) {
     ).bestStreak;
     const completed = habit.completedDates.includes(date);
     setDay(habitId, date, !completed);
+    // Celebrate on the tap, from the optimistic history, instead of waiting
+    // for the server round trip; a failed write still rolls the day back.
+    if (!completed) {
+      const updated = history.current.find((item) => item.id === habitId);
+      const nextBest = updated
+        ? calculateHabitMetrics(updated.completedDates, currentDay).bestStreak
+        : previousBest;
+      if (nextBest > previousBest) announceRecord(habitId);
+    }
     const key = JSON.stringify([habitId, date]);
     const existing = pending.current.get(key);
     if (existing) {
@@ -200,24 +221,6 @@ export function useHabitsState(repository: HabitRepository) {
             operation.desired = operation.confirmed;
         }
         setDay(habitId, date, operation.confirmed);
-        if (operation.confirmed) {
-          const updated = history.current.find((item) => item.id === habitId);
-          const nextBest = updated
-            ? calculateHabitMetrics(updated.completedDates, currentDay)
-                .bestStreak
-            : previousBest;
-          if (nextBest > previousBest) {
-            if (recordTimer.current) clearTimeout(recordTimer.current);
-            setRecordFeedback({ habitId, id: ++recordId.current });
-            void Haptics.notificationAsync(
-              Haptics.NotificationFeedbackType.Success,
-            ).catch(() => {});
-            recordTimer.current = setTimeout(() => {
-              setRecordFeedback(undefined);
-              recordTimer.current = null;
-            }, 850);
-          }
-        }
       } catch {
         // Restore only this date, preserving concurrent edits on other dates.
         setDay(habitId, date, operation.confirmed);

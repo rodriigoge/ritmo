@@ -219,6 +219,29 @@ describe('Home completion interaction', () => {
     expect(screen.queryByText('NOVO RECORDE')).toBeNull();
   });
 
+  it('celebrates the record on the tap, before the server answers', async () => {
+    await repository.toggleCompletion(habitId, '2026-10-01');
+    await repository.toggleCompletion(habitId, '2026-10-02');
+    let resolve!: (value: boolean) => void;
+    jest
+      .spyOn(InMemoryHabitRepository.prototype, 'toggleCompletion')
+      .mockImplementationOnce(
+        () =>
+          new Promise<boolean>((done) => {
+            resolve = done;
+          }),
+      );
+    await render(<Home />);
+    await screen.findByText('Corrida');
+
+    await fireEvent.press(day(3));
+    expect(screen.getByText('NOVO RECORDE')).toBeOnTheScreen();
+    expect(Haptics.notificationAsync).toHaveBeenCalledTimes(1);
+
+    await act(async () => resolve(true));
+    expect(Haptics.notificationAsync).toHaveBeenCalledTimes(1);
+  });
+
   it('does not fail persistence when haptics are unavailable', async () => {
     jest
       .mocked(Haptics.impactAsync)

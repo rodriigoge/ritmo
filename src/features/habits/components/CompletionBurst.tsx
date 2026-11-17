@@ -55,8 +55,9 @@ export function CompletionBurst({
     progress.setValue(0);
     const animation = Animated.timing(progress, {
       toValue: 1,
-      duration: big ? 720 : 560,
-      easing: Easing.out(Easing.cubic),
+      duration: big ? 520 : 420,
+      // Fast launch, soft landing.
+      easing: Easing.out(Easing.exp),
       useNativeDriver: true,
     });
     animation.start();
@@ -85,7 +86,7 @@ export function CompletionBurst({
               borderRadius: piece.round ? piece.size / 2 : 1,
               backgroundColor: piece.color,
               opacity: progress.interpolate({
-                inputRange: [0, 0.1, 0.7, 1],
+                inputRange: [0, 0.04, 0.65, 1],
                 outputRange: [0, 1, 1, 0],
               }),
               transform: [
@@ -113,7 +114,7 @@ export function CompletionBurst({
                 },
                 {
                   scale: progress.interpolate({
-                    inputRange: [0, 0.2, 1],
+                    inputRange: [0, 0.12, 1],
                     outputRange: [0.4, 1, 0.7],
                   }),
                 },

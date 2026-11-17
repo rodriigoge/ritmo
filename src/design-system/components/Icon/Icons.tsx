@@ -1,4 +1,4 @@
-import Svg, { Path } from 'react-native-svg';
+import Svg, { Circle, Path } from 'react-native-svg';
 import { colors } from '../../tokens/colors';
 
 // Small line icons in the same ink stroke as the illustrations. They are
@@ -80,5 +80,21 @@ export function SignOutIcon(props: IconProps) {
       d="M10 4 H6 A2 2 0 0 0 4 6 V18 A2 2 0 0 0 6 20 H10 M15 8 L19 12 L15 16 M19 12 H9"
       {...props}
     />
+  );
+}
+
+export function MoreIcon({ size = 20, color = colors.ink }: IconProps) {
+  return (
+    <Svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      accessible={false}
+      importantForAccessibility="no-hide-descendants"
+    >
+      <Circle cx={5} cy={12} r={2} fill={color} />
+      <Circle cx={12} cy={12} r={2} fill={color} />
+      <Circle cx={19} cy={12} r={2} fill={color} />
+    </Svg>
   );
 }

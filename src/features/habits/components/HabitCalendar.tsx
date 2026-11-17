@@ -1,15 +1,23 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   Animated,
+  Pressable,
   StyleSheet,
   Text,
   View,
   useAnimatedValue,
 } from 'react-native';
-import { IconButton } from '../../../design-system/components/IconButton/IconButton';
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from '../../../design-system/components/Icon/Icons';
 import { colors } from '../../../design-system/tokens/colors';
+import { controls } from '../../../design-system/tokens/controls';
 import { spacing } from '../../../design-system/tokens/spacing';
-import { typography } from '../../../design-system/tokens/typography';
+import {
+  fontFamilies,
+  typography,
+} from '../../../design-system/tokens/typography';
 import {
   differenceInCalendarDays,
   formatLocalDate,
@@ -24,7 +32,8 @@ import { validateCompletionDate } from '../domain/validateCompletionDate';
 import type { HabitWithHistory } from '../hooks/useHabits';
 import { DayStatus } from './DayStatus';
 
-const weekdays = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
+const weekdays = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
+const NAV_SIZE = 36;
 
 export function HabitCalendar({
   habit,
@@ -69,14 +78,6 @@ export function HabitCalendar({
   return (
     <View style={styles.calendar}>
       <View style={styles.navigation}>
-        <IconButton
-          accessibilityLabel="Mês anterior"
-          disabled={previousDisabled}
-          onPress={() => setSelectedMonth(shiftMonth(month, -1))}
-          renderIcon={({ color, size }) => (
-            <Text style={{ color, fontSize: size }}>‹</Text>
-          )}
-        />
         <Text
           accessibilityRole="header"
           accessibilityLiveRegion="polite"
@@ -84,14 +85,22 @@ export function HabitCalendar({
         >
           {formatLocalDate(month, { month: 'long', year: 'numeric' })}
         </Text>
-        <IconButton
-          accessibilityLabel="Mês seguinte"
-          disabled={nextDisabled}
-          onPress={() => setSelectedMonth(shiftMonth(month, 1))}
-          renderIcon={({ color, size }) => (
-            <Text style={{ color, fontSize: size }}>›</Text>
-          )}
-        />
+        <View style={styles.arrows}>
+          <MonthButton
+            label="Mês anterior"
+            disabled={previousDisabled}
+            onPress={() => setSelectedMonth(shiftMonth(month, -1))}
+          >
+            <ChevronLeftIcon size={16} />
+          </MonthButton>
+          <MonthButton
+            label="Mês seguinte"
+            disabled={nextDisabled}
+            onPress={() => setSelectedMonth(shiftMonth(month, 1))}
+          >
+            <ChevronRightIcon size={16} />
+          </MonthButton>
+        </View>
       </View>
       <Animated.View style={[styles.weeks, { opacity: gridOpacity }]}>
         <View style={styles.row}>
@@ -130,27 +139,82 @@ export function HabitCalendar({
     </View>
   );
 }
+function MonthButton({
+  label,
+  disabled,
+  onPress,
+  children,
+}: {
+  label: string;
+  disabled: boolean;
+  onPress: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={disabled}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ disabled }}
+      hitSlop={(controls.minTouchTarget - NAV_SIZE) / 2}
+      style={({ pressed }) => [
+        styles.navButton,
+        pressed && styles.pressed,
+        disabled && styles.navDisabled,
+      ]}
+    >
+      {children}
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
-  calendar: { gap: spacing.sm },
+  calendar: {
+    borderWidth: 1,
+    borderColor: colors.cardBorder,
+    borderRadius: 24,
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.md,
+    gap: spacing.md,
+  },
   navigation: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingHorizontal: spacing.xs,
   },
   title: {
     ...typography.habitName,
+    fontSize: 18,
     flexShrink: 1,
-    textAlign: 'center',
-    color: colors.textPrimary,
+    color: colors.ink,
+    textTransform: 'capitalize',
   },
-  weeks: { alignSelf: 'stretch' },
+  arrows: { flexDirection: 'row', gap: spacing.sm },
+  navButton: {
+    width: NAV_SIZE,
+    height: NAV_SIZE,
+    borderRadius: NAV_SIZE / 2,
+    backgroundColor: colors.chip,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  navDisabled: { opacity: 0.35 },
+  pressed: { opacity: controls.pressedOpacity },
+  weeks: { alignSelf: 'stretch', gap: 2 },
   row: { flexDirection: 'row' },
   weekday: {
     ...typography.caption,
-    color: colors.textSecondary,
+    fontFamily: fontFamilies.semibold,
+    fontSize: 11,
+    letterSpacing: 0.4,
+    color: colors.textMuted,
     textAlign: 'center',
     flex: 1,
     minWidth: 0,
+    paddingBottom: spacing.xs,
   },
   empty: { flex: 1, minWidth: 0 },
 });

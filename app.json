@@ -4,6 +4,7 @@
     "slug": "ritmo",
     "version": "0.0.2",
     "scheme": "ritmo",
+    "icon": "./assets/icon/icon.png",
     "platforms": [
       "android",
       "ios"
@@ -18,7 +19,12 @@
       "bundleIdentifier": "com.ritmo.app"
     },
     "android": {
-      "package": "com.ritmo.app"
+      "package": "com.ritmo.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon/adaptive-foreground.png",
+        "monochromeImage": "./assets/icon/adaptive-monochrome.png",
+        "backgroundColor": "#FFFFFF"
+      }
     },
     "extra": {
       "router": {},

@@ -66,7 +66,7 @@ describe('Habit Details', () => {
       await screen.findByRole('header', { name: 'Histórico' }),
     ).toBeOnTheScreen();
     expect(screen.getByLabelText('1 dia seguido')).toBeOnTheScreen();
-    expect(screen.getByText('4 conclusões')).toBeOnTheScreen();
+    expect(screen.getByLabelText('4 dias concluídos')).toBeOnTheScreen();
     expect(screen.getByLabelText('Melhor sequência: 3 dias')).toBeOnTheScreen();
     await fireEvent.press(
       screen.getByRole('button', { name: 'Opções do hábito' }),
@@ -80,6 +80,7 @@ describe('Habit Details', () => {
     expect(screen.queryByRole('button', { name: 'Voltar' })).toBeNull();
     expect(screen.queryByRole('header', { name: 'Histórico' })).toBeNull();
     await fireEvent.press(screen.getByRole('button', { name: 'Cancelar' }));
+    await act(async () => jest.advanceTimersByTime(200));
     expect(screen.queryByRole('button', { name: 'Excluir hábito' })).toBeNull();
     expect(screen.getByRole('header', { name: 'Histórico' })).toBeOnTheScreen();
     expect(await repository.getCompletions(habitId)).toHaveLength(4);
@@ -119,7 +120,7 @@ describe('Habit Details', () => {
       screen.getByRole('checkbox', { name: /^Leitura, 14 de setembro/ }),
     );
     expect(screen.getByLabelText('Melhor sequência: 4 dias')).toBeOnTheScreen();
-    expect(screen.getByText('5 conclusões')).toBeOnTheScreen();
+    expect(screen.getByLabelText('5 dias concluídos')).toBeOnTheScreen();
     await fireEvent.press(
       screen.getByRole('checkbox', { name: /^Leitura, 16 de setembro/ }),
     );
@@ -155,7 +156,7 @@ describe('Habit Details', () => {
       screen.getByRole('checkbox', { name: /^Leitura, 3 de outubro/ }),
     );
     expect(screen.getByLabelText('2 dias seguidos')).toBeOnTheScreen();
-    expect(screen.getByText('5 conclusões')).toBeOnTheScreen();
+    expect(screen.getByLabelText('5 dias concluídos')).toBeOnTheScreen();
     await fireEvent.press(screen.getByRole('button', { name: 'Voltar' }));
     await act(async () => reject(new Error('write failed')));
     expect(await screen.findByRole('alert')).toHaveTextContent(
@@ -275,10 +276,13 @@ describe('Habit Details', () => {
     ).toBeOnTheScreen();
     expect(
       screen.getByText(
-        'Todo o histórico deste hábito será removido. Esta ação não pode ser desfeita.',
+        'Todo o histórico deste hábito será apagado. Isso não pode ser desfeito.',
       ),
     ).toBeOnTheScreen();
-    await fireEvent.press(screen.getByRole('button', { name: 'Cancelar' }));
+    await fireEvent.press(
+      screen.getByRole('button', { name: 'Manter hábito' }),
+    );
+    await act(async () => jest.advanceTimersByTime(200));
     expect(screen.getByRole('header', { name: 'Histórico' })).toBeOnTheScreen();
     expect(await repository.findById(habitId)).not.toBeNull();
     expect(await repository.getCompletions(habitId)).toHaveLength(4);

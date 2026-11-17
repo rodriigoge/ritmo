@@ -3,21 +3,27 @@ import { HabitFormSheet } from './HabitFormSheet';
 import { HabitCalendar } from './HabitCalendar';
 import { HabitOptionsModal } from './HabitOptionsModal';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../../../design-system/components/Button/Button';
-import { IconButton } from '../../../design-system/components/IconButton/IconButton';
-import { Divider } from '../../../design-system/components/Divider/Divider';
+import { MoreIcon } from '../../../design-system/components/Icon/Icons';
+import {
+  TOP_BAR_CHIP,
+  TopBar,
+} from '../../../design-system/components/TopBar/TopBar';
 import { colors } from '../../../design-system/tokens/colors';
 import { controls } from '../../../design-system/tokens/controls';
 import { spacing } from '../../../design-system/tokens/spacing';
-import { typography } from '../../../design-system/tokens/typography';
+import {
+  fontFamilies,
+  typography,
+} from '../../../design-system/tokens/typography';
+import { formatLocalDate, toLocalDate } from '../../../shared/date/dateUtils';
 import { useHabits } from '../hooks/useHabits';
 import { useHabitMetrics } from '../hooks/useHabitMetrics';
 import type { HabitWithHistory } from '../hooks/useHabits';
 import type { LocalDate } from '../../../shared/date/LocalDate';
-import { StreakIndicator } from './StreakIndicator';
-import { MetricValue } from './MetricValue';
+import { HabitStats } from './HabitStats';
 
 export function HabitDetails({
   id,
@@ -81,57 +87,43 @@ function DetailsContent({
             : 'auto'
         }
       >
-        <View style={styles.toolbar}>
-          <IconButton
-            accessibilityLabel="Voltar"
-            iconAlignment="start"
-            iconSize={controls.toolbarIconSize}
-            onPress={onBack}
-            renderIcon={({ color, size }) => (
-              <Text style={{ color, fontSize: size }}>‹</Text>
-            )}
-          />
-          <IconButton
-            accessibilityLabel="Opções do hábito"
-            iconAlignment="end"
-            iconSize={controls.toolbarIconSize}
-            onPress={() => setMenuOpen(!menuOpen)}
-            renderIcon={({ color, size }) => (
-              <Text style={{ color, fontSize: size }}>⋯</Text>
-            )}
-          />
-        </View>
-        <Text accessibilityRole="header" style={styles.title}>
-          {habit.name}
-        </Text>
-        <View style={styles.metrics}>
-          <View style={styles.metricsRow}>
-            <MetricValue
-              value={metrics.totalCompletions}
-              suffix={
-                metrics.totalCompletions === 1 ? 'conclusão' : 'conclusões'
-              }
-              style={styles.body}
-            />
-            <StreakIndicator
-              inline
-              value={metrics.currentStreak}
-              recordId={
-                recordFeedback?.habitId === habit.id
-                  ? recordFeedback.id
-                  : undefined
-              }
-            />
-          </View>
-          <Text
-            accessibilityLabel={`Melhor sequência: ${metrics.bestStreak} ${metrics.bestStreak === 1 ? 'dia' : 'dias'}`}
-            style={styles.body}
-          >
-            Melhor sequência: {metrics.bestStreak}{' '}
-            {metrics.bestStreak === 1 ? 'dia' : 'dias'}
+        <TopBar
+          title="Detalhes"
+          onBack={onBack}
+          right={
+            <Pressable
+              onPress={() => setMenuOpen(!menuOpen)}
+              accessibilityRole="button"
+              accessibilityLabel="Opções do hábito"
+              hitSlop={(controls.minTouchTarget - TOP_BAR_CHIP) / 2}
+              style={({ pressed }) => [styles.chip, pressed && styles.pressed]}
+            >
+              <MoreIcon size={20} />
+            </Pressable>
+          }
+        />
+        <View style={styles.heading}>
+          <Text accessibilityRole="header" style={styles.title}>
+            {habit.name}
+          </Text>
+          <Text style={styles.body}>
+            Desde{' '}
+            {formatLocalDate(toLocalDate(new Date(habit.createdAt)), {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            })}
           </Text>
         </View>
-        <Divider />
+        <HabitStats
+          metrics={metrics}
+          completedDates={habit.completedDates}
+          createdAt={habit.createdAt}
+          today={today}
+          recordId={
+            recordFeedback?.habitId === habit.id ? recordFeedback.id : undefined
+          }
+        />
         <Text accessibilityRole="header" style={styles.sectionTitle}>
           Histórico
         </Text>
@@ -153,6 +145,7 @@ function DetailsContent({
       </ScrollView>
       {menuOpen && (
         <HabitOptionsModal
+          name={habit.name}
           onClose={() => setMenuOpen(false)}
           onEdit={() => {
             setMenuOpen(false);
@@ -184,22 +177,34 @@ function DetailsContent({
   );
 }
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.background },
+  screen: { flex: 1, backgroundColor: colors.canvas },
   content: {
-    padding: spacing.lg,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.sm,
     paddingBottom: spacing.xxxl,
     gap: spacing.xl,
   },
-  toolbar: { flexDirection: 'row', justifyContent: 'space-between' },
-  title: { ...typography.title, color: colors.textPrimary },
-  sectionTitle: { ...typography.habitName, color: colors.textPrimary },
+  heading: { gap: 2 },
+  title: {
+    ...typography.title,
+    fontFamily: fontFamilies.bold,
+    letterSpacing: -0.4,
+    color: colors.ink,
+  },
+  sectionTitle: {
+    ...typography.habitName,
+    color: colors.ink,
+    marginBottom: -spacing.sm,
+  },
+  chip: {
+    width: TOP_BAR_CHIP,
+    height: TOP_BAR_CHIP,
+    borderRadius: TOP_BAR_CHIP / 2,
+    backgroundColor: colors.chip,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pressed: { opacity: controls.pressedOpacity },
   body: { ...typography.body, color: colors.textSecondary },
   error: { ...typography.caption, color: colors.danger },
-  metrics: { gap: spacing.sm },
-  metricsRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    gap: spacing.sm,
-  },
 });
