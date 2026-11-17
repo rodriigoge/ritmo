@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "Stepp",
-    "slug": "stepp",
-    "version": "0.1.0",
-    "scheme": "stepp",
+    "name": "Ritmo",
+    "slug": "ritmo",
+    "version": "0.0.2",
+    "scheme": "ritmo",
     "platforms": [
       "android",
       "ios"
@@ -13,6 +13,19 @@
       "expo-sqlite",
       "expo-font",
       "expo-splash-screen"
-    ]
+    ],
+    "ios": {
+      "bundleIdentifier": "com.ritmo.app"
+    },
+    "android": {
+      "package": "com.ritmo.app"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b5f447cd-1534-4862-af3c-50e003e526f8"
+      }
+    },
+    "owner": "rodrigoge"
   }
 }

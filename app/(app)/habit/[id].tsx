@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { HabitDetails } from '../../src/features/habits/components/HabitDetails';
+import { HabitDetails } from '../../../src/features/habits/components/HabitDetails';
 
 export default function HabitDetailsRoute() {
   const { id } = useLocalSearchParams<{ id: string }>();

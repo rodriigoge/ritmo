@@ -1,21 +1,21 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import * as Haptics from 'expo-haptics';
-import HomeScreen from '../app/index';
+import HomeScreen from '../app/(app)/index';
 import { HabitsProvider } from '../src/features/habits/hooks/useHabits';
-import { initializeDatabase } from '../src/database/database';
-import { SQLiteHabitRepository } from '../src/features/habits/repository/SQLiteHabitRepository';
-import { TestDatabase } from './support/TestDatabase';
+import { InMemoryHabitRepository } from './support/InMemoryHabitRepository';
+import { TestAuth } from './support/TestAuth';
 jest.mock('expo-router', () => ({ useRouter: () => ({ push: jest.fn() }) }));
 function Home() {
   return (
-    <HabitsProvider>
-      <HomeScreen />
-    </HabitsProvider>
+    <TestAuth>
+      <HabitsProvider repository={repository}>
+        <HomeScreen />
+      </HabitsProvider>
+    </TestAuth>
   );
 }
 
-let mockDatabase: TestDatabase;
-jest.mock('expo-sqlite', () => ({ useSQLiteContext: () => mockDatabase }));
+let repository: InMemoryHabitRepository;
 jest.mock('expo-haptics', () => ({
   impactAsync: jest.fn(() => Promise.resolve()),
   notificationAsync: jest.fn(() => Promise.resolve()),
@@ -39,21 +39,17 @@ function day(number: number) {
 }
 
 describe('Home completion interaction', () => {
-  let repository: SQLiteHabitRepository;
   let habitId: string;
   beforeEach(async () => {
     jest.useFakeTimers();
     jest.setSystemTime(new Date(2026, 8, 1, 12));
-    mockDatabase = new TestDatabase();
-    await initializeDatabase(mockDatabase);
-    repository = new SQLiteHabitRepository(mockDatabase);
+    repository = new InMemoryHabitRepository();
     habitId = (await repository.create({ name: 'Corrida' })).id;
     jest.setSystemTime(new Date(2026, 9, 3, 12));
     jest.mocked(Haptics.impactAsync).mockClear();
     jest.mocked(Haptics.notificationAsync).mockClear();
   });
   afterEach(() => {
-    mockDatabase.close();
     jest.useRealTimers();
     jest.restoreAllMocks();
   });
@@ -105,7 +101,7 @@ describe('Home completion interaction', () => {
     const gate = deferred();
     const persist = repository.toggleCompletion.bind(repository);
     jest
-      .spyOn(SQLiteHabitRepository.prototype, 'toggleCompletion')
+      .spyOn(InMemoryHabitRepository.prototype, 'toggleCompletion')
       .mockImplementationOnce((id, date) =>
         gate.promise.then(() => persist(id, date)),
       );
@@ -123,7 +119,7 @@ describe('Home completion interaction', () => {
   it('rolls back only the failed day, retaining successful concurrent edits', async () => {
     const gate = deferred();
     jest
-      .spyOn(SQLiteHabitRepository.prototype, 'toggleCompletion')
+      .spyOn(InMemoryHabitRepository.prototype, 'toggleCompletion')
       .mockImplementationOnce(() => gate.promise.then(() => true));
     await render(<Home />);
     await screen.findByText('Corrida');
@@ -150,7 +146,7 @@ describe('Home completion interaction', () => {
       const gate = deferred();
       const persist = repository.toggleCompletion.bind(repository);
       const toggle = jest
-        .spyOn(SQLiteHabitRepository.prototype, 'toggleCompletion')
+        .spyOn(InMemoryHabitRepository.prototype, 'toggleCompletion')
         .mockImplementationOnce((id, date) =>
           gate.promise.then(() => persist(id, date)),
         );
@@ -171,7 +167,7 @@ describe('Home completion interaction', () => {
     const gate = deferred();
     const persist = repository.toggleCompletion.bind(repository);
     jest
-      .spyOn(SQLiteHabitRepository.prototype, 'toggleCompletion')
+      .spyOn(InMemoryHabitRepository.prototype, 'toggleCompletion')
       .mockImplementationOnce((id, date) =>
         gate.promise.then(() => persist(id, date)),
       )
@@ -190,7 +186,7 @@ describe('Home completion interaction', () => {
     await repository.delete(habitId);
     habitId = (await repository.create({ name: 'Corrida' })).id;
     const toggle = jest.spyOn(
-      SQLiteHabitRepository.prototype,
+      InMemoryHabitRepository.prototype,
       'toggleCompletion',
     );
     await render(<Home />);

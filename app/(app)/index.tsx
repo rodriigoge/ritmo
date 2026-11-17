@@ -1,18 +1,19 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { HabitFormSheet } from '../src/features/habits/components/HabitFormSheet';
+import { HabitFormSheet } from '../../src/features/habits/components/HabitFormSheet';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { IconButton } from '../src/design-system/components/IconButton/IconButton';
-import { colors } from '../src/design-system/tokens/colors';
-import { controls } from '../src/design-system/tokens/controls';
-import { radius } from '../src/design-system/tokens/radius';
-import { spacing } from '../src/design-system/tokens/spacing';
-import { typography } from '../src/design-system/tokens/typography';
-import { HabitCard } from '../src/features/habits/components/HabitCard';
-import { useHabits } from '../src/features/habits/hooks/useHabits';
-import { Button } from '../src/design-system/components/Button/Button';
-import { formatLocalDate } from '../src/shared/date/dateUtils';
+import { IconButton } from '../../src/design-system/components/IconButton/IconButton';
+import { colors } from '../../src/design-system/tokens/colors';
+import { controls } from '../../src/design-system/tokens/controls';
+import { radius } from '../../src/design-system/tokens/radius';
+import { spacing } from '../../src/design-system/tokens/spacing';
+import { typography } from '../../src/design-system/tokens/typography';
+import { HabitCard } from '../../src/features/habits/components/HabitCard';
+import { useHabits } from '../../src/features/habits/hooks/useHabits';
+import { Button } from '../../src/design-system/components/Button/Button';
+import { formatLocalDate } from '../../src/shared/date/dateUtils';
+import { AccountButton } from '../../src/features/auth/components/AccountButton';
 
 export default function Home() {
   const router = useRouter();
@@ -81,9 +82,12 @@ export default function Home() {
           }
           ListHeaderComponent={
             <View style={styles.header}>
-              <Text accessibilityRole="header" style={styles.title}>
-                Meus hábitos
-              </Text>
+              <View style={styles.titleRow}>
+                <Text accessibilityRole="header" style={styles.title}>
+                  Meus hábitos
+                </Text>
+                <AccountButton />
+              </View>
               <Text style={styles.date}>
                 {formatLocalDate(today, { day: 'numeric', month: 'long' })}
               </Text>
@@ -143,6 +147,12 @@ const styles = StyleSheet.create({
     paddingTop: spacing.xl,
     paddingBottom: spacing.lg,
     gap: spacing.sm,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing.md,
   },
   empty: { paddingVertical: spacing.xxxl, gap: spacing.lg },
   title: { ...typography.title, color: colors.textPrimary },

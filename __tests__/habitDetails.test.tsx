@@ -5,15 +5,13 @@ import {
   act,
 } from 'expo-router/testing-library';
 import { Stack } from 'expo-router';
-import Home from '../app/index';
-import DetailsRoute from '../app/habit/[id]';
+import Home from '../app/(app)/index';
+import DetailsRoute from '../app/(app)/habit/[id]';
 import { HabitsProvider } from '../src/features/habits/hooks/useHabits';
-import { initializeDatabase } from '../src/database/database';
-import { SQLiteHabitRepository } from '../src/features/habits/repository/SQLiteHabitRepository';
-import { TestDatabase } from './support/TestDatabase';
+import { InMemoryHabitRepository } from './support/InMemoryHabitRepository';
+import { TestAuth } from './support/TestAuth';
 
-let mockDatabase: TestDatabase;
-jest.mock('expo-sqlite', () => ({ useSQLiteContext: () => mockDatabase }));
+let repository: InMemoryHabitRepository;
 jest.mock('expo-haptics', () => ({
   impactAsync: jest.fn(() => Promise.resolve()),
   notificationAsync: jest.fn(() => Promise.resolve()),
@@ -23,9 +21,11 @@ jest.mock('expo-haptics', () => ({
 
 function Layout() {
   return (
-    <HabitsProvider>
-      <Stack screenOptions={{ headerShown: false, animation: 'none' }} />
-    </HabitsProvider>
+    <TestAuth>
+      <HabitsProvider repository={repository}>
+        <Stack screenOptions={{ headerShown: false, animation: 'none' }} />
+      </HabitsProvider>
+    </TestAuth>
   );
 }
 async function openApp(initialUrl = '/') {
@@ -36,14 +36,11 @@ async function openApp(initialUrl = '/') {
 }
 
 describe('Habit Details', () => {
-  let repository: SQLiteHabitRepository;
   let habitId: string;
   beforeEach(async () => {
     jest.useFakeTimers();
     jest.setSystemTime(new Date(2026, 8, 10, 12));
-    mockDatabase = new TestDatabase();
-    await initializeDatabase(mockDatabase);
-    repository = new SQLiteHabitRepository(mockDatabase);
+    repository = new InMemoryHabitRepository();
     habitId = (await repository.create({ name: 'Leitura' })).id;
     jest.setSystemTime(new Date(2026, 9, 3, 12));
     for (const date of [
@@ -56,7 +53,6 @@ describe('Habit Details', () => {
     }
   });
   afterEach(() => {
-    mockDatabase.close();
     jest.useRealTimers();
     jest.restoreAllMocks();
   });
@@ -143,7 +139,7 @@ describe('Habit Details', () => {
   it('shows optimistic calendar metrics and rolls back even after navigating Home', async () => {
     let reject!: (reason: Error) => void;
     jest
-      .spyOn(SQLiteHabitRepository.prototype, 'toggleCompletion')
+      .spyOn(InMemoryHabitRepository.prototype, 'toggleCompletion')
       .mockImplementationOnce(
         () =>
           new Promise<boolean>((_, no) => {
@@ -172,7 +168,7 @@ describe('Habit Details', () => {
 
   it('blocks future dates but persists calendar dates before creation', async () => {
     const toggle = jest.spyOn(
-      SQLiteHabitRepository.prototype,
+      InMemoryHabitRepository.prototype,
       'toggleCompletion',
     );
     await openApp('/habit/' + habitId);
@@ -249,7 +245,7 @@ describe('Habit Details', () => {
       'Rascunho',
     );
     jest
-      .spyOn(SQLiteHabitRepository.prototype, 'update')
+      .spyOn(InMemoryHabitRepository.prototype, 'update')
       .mockRejectedValueOnce(new Error('write failed'));
     await fireEvent.press(screen.getByRole('button', { name: 'Salvar' }));
     expect(await screen.findByRole('alert')).toHaveTextContent(
@@ -319,7 +315,7 @@ describe('Habit Details', () => {
       screen.getByRole('button', { name: 'Excluir hábito' }),
     );
     jest
-      .spyOn(SQLiteHabitRepository.prototype, 'delete')
+      .spyOn(InMemoryHabitRepository.prototype, 'delete')
       .mockRejectedValueOnce(new Error('delete failed'));
     await fireEvent.press(
       screen.getByRole('button', { name: 'Excluir hábito' }),
@@ -342,9 +338,9 @@ describe('Habit Details', () => {
     });
     const persist = repository.toggleCompletion.bind(repository);
     jest
-      .spyOn(SQLiteHabitRepository.prototype, 'toggleCompletion')
+      .spyOn(InMemoryHabitRepository.prototype, 'toggleCompletion')
       .mockImplementationOnce((id, date) => gate.then(() => persist(id, date)));
-    const remove = jest.spyOn(SQLiteHabitRepository.prototype, 'delete');
+    const remove = jest.spyOn(InMemoryHabitRepository.prototype, 'delete');
     await openApp('/habit/' + habitId);
     await screen.findByRole('header', { name: 'Histórico' });
     await fireEvent.press(

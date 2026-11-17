@@ -5,34 +5,30 @@ import {
   screen,
   within,
 } from '@testing-library/react-native';
-import HomeScreen from '../app/index';
+import HomeScreen from '../app/(app)/index';
 import { HabitsProvider } from '../src/features/habits/hooks/useHabits';
-import { initializeDatabase } from '../src/database/database';
-import { SQLiteHabitRepository } from '../src/features/habits/repository/SQLiteHabitRepository';
-import { TestDatabase } from './support/TestDatabase';
+import { InMemoryHabitRepository } from './support/InMemoryHabitRepository';
+import { TestAuth } from './support/TestAuth';
 jest.mock('expo-router', () => ({ useRouter: () => ({ push: jest.fn() }) }));
 function Home() {
   return (
-    <HabitsProvider>
-      <HomeScreen />
-    </HabitsProvider>
+    <TestAuth>
+      <HabitsProvider repository={repository}>
+        <HomeScreen />
+      </HabitsProvider>
+    </TestAuth>
   );
 }
 
-let mockDatabase: TestDatabase;
-jest.mock('expo-sqlite', () => ({ useSQLiteContext: () => mockDatabase }));
+let repository: InMemoryHabitRepository;
 
 describe('Home with persisted data', () => {
-  let repository: SQLiteHabitRepository;
   beforeEach(() => {
     jest.useFakeTimers();
     jest.setSystemTime(new Date(2026, 8, 1, 12));
-    mockDatabase = new TestDatabase();
-    initializeDatabase(mockDatabase);
-    repository = new SQLiteHabitRepository(mockDatabase);
+    repository = new InMemoryHabitRepository();
   });
   afterEach(() => {
-    mockDatabase.close();
     jest.useRealTimers();
     jest.restoreAllMocks();
   });
@@ -83,7 +79,7 @@ describe('Home with persisted data', () => {
   it('shows loading until the repository resolves', async () => {
     let resolve!: (value: []) => void;
     jest
-      .spyOn(SQLiteHabitRepository.prototype, 'findAll')
+      .spyOn(InMemoryHabitRepository.prototype, 'findAll')
       .mockImplementationOnce(
         () =>
           new Promise((done) => {
@@ -100,7 +96,7 @@ describe('Home with persisted data', () => {
 
   it('shows a recoverable loading error without fictional habits', async () => {
     jest
-      .spyOn(SQLiteHabitRepository.prototype, 'findAll')
+      .spyOn(InMemoryHabitRepository.prototype, 'findAll')
       .mockRejectedValueOnce(new Error('read failed'));
     await render(<Home />);
     expect(await screen.findByRole('alert')).toHaveTextContent(
@@ -150,7 +146,7 @@ describe('Home with persisted data', () => {
       'Leitura',
     );
     jest
-      .spyOn(SQLiteHabitRepository.prototype, 'create')
+      .spyOn(InMemoryHabitRepository.prototype, 'create')
       .mockRejectedValueOnce(new Error('write failed'));
     await fireEvent.press(screen.getByRole('button', { name: 'Criar hábito' }));
     expect(await screen.findByRole('alert')).toHaveTextContent(
@@ -171,7 +167,7 @@ describe('Home with persisted data', () => {
     const saved = await repository.create({ name: 'Yoga' });
     let resolve!: (value: typeof saved) => void;
     const create = jest
-      .spyOn(SQLiteHabitRepository.prototype, 'create')
+      .spyOn(InMemoryHabitRepository.prototype, 'create')
       .mockImplementationOnce(
         () =>
           new Promise((done) => {
@@ -225,7 +221,9 @@ describe('Home with persisted data', () => {
       screen.queryByRole('button', { name: 'Criar primeiro hábito' }),
     ).toBeNull();
     expect(screen.getAllByRole('checkbox')).toHaveLength(6);
-    expect(screen.getAllByRole('checkbox', { disabled: false })).toHaveLength(6);
+    expect(screen.getAllByRole('checkbox', { disabled: false })).toHaveLength(
+      6,
+    );
     expect((await repository.findAll())[0].name).toBe('Alongamento');
   });
 });

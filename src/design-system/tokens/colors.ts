@@ -13,4 +13,8 @@ export const colors = {
   danger: '#AC302B',
   onAction: '#FFFFFF',
   floatingAction: '#000000',
+  // Brand roles shared by the logo, the Pingo mascot and onboarding.
+  canvas: '#FFFFFF',
+  ink: '#1B211A',
+  brand: '#3368A0',
 } as const;

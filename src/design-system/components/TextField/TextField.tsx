@@ -30,6 +30,9 @@ export type TextFieldProps = AccessibleName &
     | 'onBlur'
     | 'accessibilityHint'
     | 'testID'
+    | 'secureTextEntry'
+    | 'textContentType'
+    | 'autoComplete'
   > & {
     value: string;
     onChangeText: (value: string) => void;

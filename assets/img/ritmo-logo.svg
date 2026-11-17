@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 220" width="760" height="220" role="img" aria-label="ritmo.">
+  <title>Ritmo</title>
+  <g fill="none" stroke="#1B211A" stroke-width="27" stroke-linecap="round" stroke-linejoin="round">
+    <!-- custom rounded lowercase r, with a flowing bowl and curved terminal -->
+    <path d="M53 157 V116 C53 84 75 64 103 64 C130 64 145 83 140 105 C136 124 122 133 105 133 C97 133 93 133 91 135 C98 149 113 156 135 157"/>
+    <!-- i -->
+    <path d="M177 88 V157"/>
+    <!-- t -->
+    <path d="M226 47 V123 C226 145 235 157 257 157"/>
+    <path d="M226 87 H265"/>
+    <!-- m -->
+    <path d="M302 157 V112 C302 88 316 74 337 74 C359 74 373 88 373 112 V157"/>
+    <path d="M373 112 C373 88 387 74 409 74 C430 74 444 88 444 112 V157"/>
+    <!-- o -->
+    <circle cx="515" cy="115" r="43"/>
+  </g>
+  <circle cx="177" cy="49" r="14" fill="#1B211A"/>
+  <circle cx="588" cy="157" r="17" fill="#3368A0"/>
+</svg>

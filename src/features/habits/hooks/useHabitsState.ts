@@ -1,13 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, LayoutAnimation } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { useSQLiteContext } from 'expo-sqlite';
 import { getToday, toLocalDate } from '../../../shared/date/dateUtils';
 import type { LocalDate } from '../../../shared/date/LocalDate';
 import type { Habit } from '../domain/Habit';
 import { normalizeHabitName } from '../domain/HabitInput';
 import { validateCompletionDate } from '../domain/validateCompletionDate';
-import { SQLiteHabitRepository } from '../repository/SQLiteHabitRepository';
+import type { HabitRepository } from '../repository/HabitRepository';
 import { calculateHabitMetrics } from '../domain/calculateHabitMetrics';
 
 export type HabitWithHistory = Habit & { completedDates: LocalDate[] };
@@ -23,9 +22,7 @@ function animateHabitListChange() {
   LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 }
 
-export function useHabitsState() {
-  const db = useSQLiteContext();
-  const repository = useMemo(() => new SQLiteHabitRepository(db), [db]);
+export function useHabitsState(repository: HabitRepository) {
   const [habits, setHabits] = useState<HabitWithHistory[]>([]);
   const history = useRef<HabitWithHistory[]>([]);
   const deleting = useRef(new Set<string>());
@@ -64,15 +61,7 @@ export function useHabitsState() {
     let active = true;
     async function load() {
       try {
-        const stored = await repository.findAll();
-        const result = await Promise.all(
-          stored.map(async (habit) => ({
-            ...habit,
-            completedDates: (await repository.getCompletions(habit.id)).map(
-              (item) => item.date,
-            ),
-          })),
-        );
+        const result = await repository.findAllWithCompletedDates();
         if (active) updateHabits(() => result);
       } catch {
         if (active)
@@ -127,7 +116,7 @@ export function useHabitsState() {
     if (deleting.current.has(id)) return;
     deleting.current.add(id);
     try {
-      // Finish this habit's queued toggles before deleting; SQLite owns cascade.
+      // Finish this habit's queued toggles before deleting; the database cascades.
       await Promise.all(
         [...pending.current.values()]
           .filter((item) => item.habitId === id)
