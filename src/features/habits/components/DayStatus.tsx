@@ -1,11 +1,14 @@
+import { useEffect, useRef, useState } from 'react';
 import {
   Animated,
+  Easing,
   Pressable,
   StyleSheet,
   Text,
   View,
   useAnimatedValue,
 } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
 import { colors } from '../../../design-system/tokens/colors';
 import { controls } from '../../../design-system/tokens/controls';
@@ -17,6 +20,13 @@ import {
 } from '../../../design-system/tokens/typography';
 import { formatLocalDate } from '../../../shared/date/dateUtils';
 import type { LocalDate } from '../../../shared/date/LocalDate';
+import { useReduceMotion } from '../../../shared/useReduceMotion';
+import { CompletionBurst } from './CompletionBurst';
+
+const AnimatedPath = Animated.createAnimatedComponent(Path);
+// "M7 12.5 L10.5 16 L17 9" is about 14.2 units long.
+const CHECK_PATH = 'M7 12.5 L10.5 16 L17 9';
+const CHECK_LENGTH = 15;
 
 type DayStatusProps = {
   date: LocalDate;
@@ -25,6 +35,8 @@ type DayStatusProps = {
   habitName: string;
   compact?: boolean;
   disabled?: boolean;
+  /** Changes when this completion set a new streak record. */
+  recordId?: number;
   onPress?: () => void;
 };
 
@@ -35,9 +47,15 @@ export function DayStatus({
   habitName,
   compact = false,
   disabled = false,
+  recordId,
   onPress,
 }: DayStatusProps) {
-  const scale = useAnimatedValue(1);
+  const press = useAnimatedValue(1);
+  const pop = useAnimatedValue(1);
+  const draw = useAnimatedValue(completed ? 1 : 0);
+  const reduceMotion = useReduceMotion();
+  const [burst, setBurst] = useState({ count: 0, big: false });
+  const previous = useRef({ completed, recordId });
   const unavailable = disabled || !onPress;
   const isToday = date === today;
   const description = formatLocalDate(date, {
@@ -45,6 +63,51 @@ export function DayStatus({
     month: 'long',
     year: 'numeric',
   });
+
+  // Animate only real changes, never the first render.
+  useEffect(() => {
+    const before = previous.current;
+    previous.current = { completed, recordId };
+    const newRecord =
+      recordId !== undefined && recordId !== before.recordId && completed;
+    const justCompleted = completed && !before.completed;
+
+    if (completed !== before.completed) {
+      if (reduceMotion) {
+        draw.setValue(completed ? 1 : 0);
+      } else if (completed) {
+        draw.setValue(0);
+        Animated.timing(draw, {
+          toValue: 1,
+          duration: 180,
+          delay: 40,
+          easing: Easing.out(Easing.quad),
+          useNativeDriver: false,
+        }).start();
+        pop.setValue(0.8);
+        Animated.spring(pop, {
+          toValue: 1,
+          friction: 4,
+          tension: 220,
+          useNativeDriver: true,
+        }).start();
+      } else {
+        Animated.timing(draw, {
+          toValue: 0,
+          duration: 100,
+          useNativeDriver: false,
+        }).start();
+      }
+    }
+
+    if (reduceMotion) return;
+    if (newRecord) {
+      setBurst((current) => ({ count: current.count + 1, big: true }));
+    } else if (justCompleted && isToday) {
+      setBurst((current) => ({ count: current.count + 1, big: false }));
+    }
+  }, [completed, recordId, isToday, reduceMotion, draw, pop]);
+
   return (
     <Pressable
       accessible
@@ -61,16 +124,16 @@ export function DayStatus({
           );
       }}
       onPressIn={() =>
-        Animated.timing(scale, {
-          toValue: 0.9,
-          duration: 90,
+        Animated.timing(press, {
+          toValue: 0.88,
+          duration: 80,
           useNativeDriver: true,
         }).start()
       }
       onPressOut={() =>
-        Animated.timing(scale, {
+        Animated.timing(press, {
           toValue: 1,
-          duration: 90,
+          duration: 80,
           useNativeDriver: true,
         }).start()
       }
@@ -84,17 +147,44 @@ export function DayStatus({
       <Text style={[styles.day, isToday && styles.todayLabel]}>
         {formatLocalDate(date, { day: '2-digit' })}
       </Text>
-      <Animated.View
-        style={[
-          styles.mark,
-          completed && styles.completed,
-          { transform: [{ scale }] },
-        ]}
-      >
-        {isToday && !compact && (
-          <View pointerEvents="none" style={styles.todayRing} />
-        )}
-      </Animated.View>
+      <View>
+        <Animated.View style={{ transform: [{ scale: press }] }}>
+          <Animated.View
+            style={[
+              styles.mark,
+              completed && styles.completed,
+              { transform: [{ scale: pop }] },
+            ]}
+          >
+            {completed && (
+              <Svg
+                width={controls.iconSize}
+                height={controls.iconSize}
+                viewBox="0 0 24 24"
+                style={styles.check}
+              >
+                <AnimatedPath
+                  d={CHECK_PATH}
+                  stroke={colors.onAction}
+                  strokeWidth={2.6}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
+                  strokeDasharray={CHECK_LENGTH}
+                  strokeDashoffset={draw.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [CHECK_LENGTH, 0],
+                  })}
+                />
+              </Svg>
+            )}
+            {isToday && !compact && (
+              <View pointerEvents="none" style={styles.todayRing} />
+            )}
+          </Animated.View>
+        </Animated.View>
+        <CompletionBurst trigger={burst.count} big={burst.big} />
+      </View>
     </Pressable>
   );
 }
@@ -120,16 +210,18 @@ const styles = StyleSheet.create({
     width: controls.iconSize,
     height: controls.iconSize,
     borderRadius: radius.round,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: colors.textMuted,
   },
   completed: {
     backgroundColor: colors.completed,
     borderColor: colors.completed,
   },
+  // The border takes 1.5 units, so pull the full-size check back onto it.
+  check: { position: 'absolute', top: -1.5, left: -1.5 },
   todayRing: {
     position: 'absolute',
-    inset: -spacing.xs,
+    inset: -spacing.xs - 1.5,
     borderRadius: radius.round,
     borderWidth: 1,
     borderStyle: 'dashed',

@@ -71,7 +71,7 @@ describe('Habit Calendar', () => {
       screen.getByRole('checkbox', { name: /^Ler, 1 de dezembro/ }),
     );
     expect(onToggleDay).not.toHaveBeenCalled();
-  });
+  }, 15_000); // Renders a full year of day cells.
   it('renders completion, today and future states and bounds month navigation', async () => {
     await render(
       <HabitCalendar

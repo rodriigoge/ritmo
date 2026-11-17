@@ -55,6 +55,7 @@ export function HabitCard({
             habitName={habit.name}
             completed={completed}
             disabled={disabled}
+            recordId={date === today ? recordId : undefined}
             onPress={onToggleDay ? () => onToggleDay(date) : undefined}
           />
         ))}
