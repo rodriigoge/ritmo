@@ -17,4 +17,7 @@ export const colors = {
   canvas: '#FFFFFF',
   ink: '#1B211A',
   brand: '#3368A0',
+  // Line-art cards: hairline border and the soft grey of round chips.
+  cardBorder: '#E6E6E2',
+  chip: '#F1F1EE',
 } as const;

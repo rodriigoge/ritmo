@@ -190,6 +190,8 @@ describe('Home with persisted data', () => {
       'Rascunho',
     );
     await fireEvent.press(screen.getByRole('button', { name: 'Cancelar' }));
+    // The card plays a short exit animation before it closes.
+    await act(async () => jest.advanceTimersByTime(200));
     expect(await repository.findAll()).toHaveLength(0);
     await fireEvent.press(screen.getByRole('button', { name: 'Criar hábito' }));
     expect(screen.getByLabelText('Nome do hábito')).toHaveDisplayValue('');
@@ -202,9 +204,7 @@ describe('Home with persisted data', () => {
     ).toBeOnTheScreen();
     expect(screen.queryAllByRole('checkbox')).toHaveLength(0);
     expect(screen.queryByText('Academia')).toBeNull();
-    await fireEvent.press(
-      screen.getByRole('button', { name: 'Criar primeiro hábito' }),
-    );
+    await fireEvent.press(screen.getByRole('button', { name: 'Criar hábito' }));
     expect(
       screen.getByRole('header', { name: 'Novo hábito' }),
     ).toBeOnTheScreen();
@@ -217,9 +217,7 @@ describe('Home with persisted data', () => {
       await screen.findByRole('header', { name: 'Alongamento' }),
     ).toBeOnTheScreen();
     expect(screen.queryByText('Nenhum hábito ainda')).toBeNull();
-    expect(
-      screen.queryByRole('button', { name: 'Criar primeiro hábito' }),
-    ).toBeNull();
+    expect(screen.queryByText('Comece por aqui')).toBeNull();
     expect(screen.getAllByRole('checkbox')).toHaveLength(6);
     expect(screen.getAllByRole('checkbox', { disabled: false })).toHaveLength(
       6,

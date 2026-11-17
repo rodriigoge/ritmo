@@ -66,6 +66,10 @@ export type Database = {
         Args: { p_habit_id: string; p_date: string };
         Returns: boolean;
       };
+      delete_own_account: {
+        Args: Record<string, never>;
+        Returns: undefined;
+      };
     };
     Enums: { [_ in never]: never };
     CompositeTypes: { [_ in never]: never };

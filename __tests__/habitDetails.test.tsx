@@ -255,6 +255,8 @@ describe('Habit Details', () => {
       'Rascunho',
     );
     await fireEvent.press(screen.getByRole('button', { name: 'Cancelar' }));
+    // The card plays a short exit animation before it closes.
+    await act(async () => jest.advanceTimersByTime(200));
     expect(screen.getByRole('header', { name: 'Leitura' })).toBeOnTheScreen();
     expect((await repository.findById(habitId))!.name).toBe('Leitura');
   });

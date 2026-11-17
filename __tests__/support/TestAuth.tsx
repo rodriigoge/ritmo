@@ -18,6 +18,8 @@ export function createAuthService(
     sendPasswordReset: jest.fn(async () => {}),
     exchangeLinkCode: jest.fn(async () => {}),
     updatePassword: jest.fn(async () => {}),
+    updateProfile: jest.fn(async () => {}),
+    deleteAccount: jest.fn(async () => {}),
     signOut: jest.fn(async () => {}),
     ...overrides,
   } as jest.Mocked<AuthService>;
@@ -28,17 +30,24 @@ export function TestAuth({
   children,
   service = createAuthService(),
   status = 'signed-in',
+  avatarUrl = null,
 }: {
   children: ReactNode;
   service?: AuthService;
   status?: AuthState['status'];
+  avatarUrl?: string | null;
 }) {
   const value: AuthState = {
     ...service,
     status,
     user:
       status === 'signed-in'
-        ? { id: 'user-1', email: 'ana@exemplo.com', name: 'Ana' }
+        ? {
+            id: 'user-1',
+            email: 'ana@exemplo.com',
+            name: 'Ana',
+            avatarUrl,
+          }
         : null,
   };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -6,7 +6,9 @@ import {
   View,
   useAnimatedValue,
 } from 'react-native';
+import { FlameIcon } from '../../../design-system/components/Icon/Icons';
 import { colors } from '../../../design-system/tokens/colors';
+import { spacing } from '../../../design-system/tokens/spacing';
 import {
   fontFamilies,
   typography,
@@ -40,6 +42,35 @@ export function StreakIndicator({
     ]).start();
   }, [opacity, value]);
 
+  if (inline) {
+    // Card meta row: flame, count and a "record" badge, left aligned.
+    return (
+      <View style={styles.inlineRow}>
+        <View
+          accessible
+          accessibilityLabel={value + ' ' + label}
+          style={styles.inlineMetric}
+        >
+          <FlameIcon
+            size={18}
+            color={value > 0 ? colors.ink : colors.textMuted}
+          />
+          <Animated.Text style={[styles.inline, { opacity }]}>
+            {value} {label}
+          </Animated.Text>
+        </View>
+        {showRecord && (
+          <Text
+            accessibilityLiveRegion="polite"
+            style={[styles.record, styles.badge]}
+          >
+            NOVO RECORDE
+          </Text>
+        )}
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <View
@@ -47,18 +78,10 @@ export function StreakIndicator({
         accessibilityLabel={value + ' ' + label}
         style={styles.metric}
       >
-        {inline ? (
-          <Animated.Text style={[styles.inline, { opacity }]}>
-            {value} {label}
-          </Animated.Text>
-        ) : (
-          <>
-            <Animated.Text style={[styles.value, { opacity }]}>
-              {value}
-            </Animated.Text>
-            <Text style={styles.label}>{label}</Text>
-          </>
-        )}
+        <Animated.Text style={[styles.value, { opacity }]}>
+          {value}
+        </Animated.Text>
+        <Text style={styles.label}>{label}</Text>
       </View>
       {showRecord && (
         <Text accessibilityLiveRegion="polite" style={styles.record}>
@@ -72,10 +95,22 @@ export function StreakIndicator({
 const styles = StyleSheet.create({
   container: { alignItems: 'flex-end' },
   metric: { alignItems: 'flex-end' },
+  inlineRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  inlineMetric: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   inline: {
-    ...typography.body,
+    ...typography.label,
     color: colors.textSecondary,
-    textAlign: 'right',
+  },
+  badge: {
+    paddingHorizontal: spacing.sm,
+    borderRadius: 10,
+    overflow: 'hidden',
+    backgroundColor: '#E7F2E5',
   },
   value: {
     ...typography.metric,

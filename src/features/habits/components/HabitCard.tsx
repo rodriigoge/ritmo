@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { ArrowRightIcon } from '../../../design-system/components/Icon/Icons';
 import { colors } from '../../../design-system/tokens/colors';
-import { radius } from '../../../design-system/tokens/radius';
+import { controls } from '../../../design-system/tokens/controls';
 import { spacing } from '../../../design-system/tokens/spacing';
 import { typography } from '../../../design-system/tokens/typography';
 import { useRecentActivity } from '../hooks/useRecentActivity';
@@ -30,29 +31,20 @@ export function HabitCard({
   const days = useRecentActivity(habit.completedDates, habit.createdAt, today);
   return (
     <View style={styles.container} testID={`habit-${habit.id}`}>
-      <Pressable accessible={false} onPress={onPress} style={styles.heading}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={`Ver detalhes de ${habit.name}`}
-          onPress={onPress}
-          style={styles.description}
-        >
-          <Text accessibilityRole="header" style={styles.name}>
-            {habit.name}
-          </Text>
-        </Pressable>
-        <View style={styles.metrics}>
-          <MetricValue
-            value={metrics.totalCompletions}
-            suffix={metrics.totalCompletions === 1 ? 'conclusão' : 'conclusões'}
-            style={styles.total}
-          />
-          <StreakIndicator
-            inline
-            value={metrics.currentStreak}
-            recordId={recordId}
-          />
-        </View>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`Ver detalhes de ${habit.name}`}
+        onPress={onPress}
+        style={({ pressed }) => [styles.heading, pressed && styles.pressed]}
+      >
+        <StreakIndicator
+          inline
+          value={metrics.currentStreak}
+          recordId={recordId}
+        />
+        <Text accessibilityRole="header" style={styles.name}>
+          {habit.name}
+        </Text>
       </Pressable>
       <View style={styles.days}>
         {days.map(({ date, completed, disabled }) => (
@@ -66,6 +58,24 @@ export function HabitCard({
             onPress={onToggleDay ? () => onToggleDay(date) : undefined}
           />
         ))}
+      </View>
+      <View style={styles.footer}>
+        <MetricValue
+          value={metrics.totalCompletions}
+          suffix={metrics.totalCompletions === 1 ? 'conclusão' : 'conclusões'}
+          style={styles.total}
+        />
+        {/* Same action as the heading, which already names it for screen
+            readers; this is the round "open" chip of the card. */}
+        <Pressable
+          accessible={false}
+          importantForAccessibility="no-hide-descendants"
+          onPress={onPress}
+          hitSlop={spacing.sm}
+          style={({ pressed }) => [styles.open, pressed && styles.pressed]}
+        >
+          <ArrowRightIcon size={18} />
+        </Pressable>
       </View>
       {error && (
         <Text
@@ -82,27 +92,41 @@ export function HabitCard({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.habitCard,
-    borderRadius: radius.control,
-    paddingVertical: spacing.xl,
-    paddingHorizontal: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.cardBorder,
+    borderRadius: 24,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.md,
+    paddingHorizontal: spacing.lg,
     gap: spacing.md,
   },
-  heading: {
-    gap: spacing.sm,
+  heading: { gap: spacing.xs, alignSelf: 'stretch' },
+  name: {
+    ...typography.habitName,
+    color: colors.ink,
   },
-  description: { alignSelf: 'stretch' },
-  metrics: {
+  days: {
     flexDirection: 'row',
     alignItems: 'flex-start',
+    backgroundColor: colors.chip,
+    borderRadius: 18,
+    paddingHorizontal: spacing.xs,
+  },
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
     gap: spacing.sm,
   },
-  name: {
-    ...typography.habitName,
-    fontWeight: '700',
-    color: colors.textPrimary,
+  total: { ...typography.label, color: colors.textSecondary },
+  open: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.chip,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  total: { ...typography.body, color: colors.textSecondary },
-  days: { flexDirection: 'row', alignItems: 'flex-start' },
+  pressed: { opacity: controls.pressedOpacity },
   error: { ...typography.caption, color: colors.danger },
 });

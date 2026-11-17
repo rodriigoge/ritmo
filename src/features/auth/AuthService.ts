@@ -1,4 +1,10 @@
-export type AuthUser = { id: string; email: string; name: string };
+export type AuthUser = {
+  id: string;
+  email: string;
+  name: string;
+  /** Profile photo from the sign-in provider (Google), when there is one. */
+  avatarUrl: string | null;
+};
 
 export type SignUpInput = { name: string; email: string; password: string };
 
@@ -19,5 +25,8 @@ export interface AuthService {
   /** Finishes an email link (confirmation or password reset). */
   exchangeLinkCode(code: string): Promise<void>;
   updatePassword(password: string): Promise<void>;
+  updateProfile(input: { name: string }): Promise<void>;
+  /** Permanently deletes the account and all of its habits, then signs out. */
+  deleteAccount(): Promise<void>;
   signOut(): Promise<void>;
 }

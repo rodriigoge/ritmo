@@ -224,7 +224,12 @@ describe('AuthProvider', () => {
     expect(screen.getByText('signed-out:-')).toBeTruthy();
 
     await act(async () =>
-      emit({ id: 'u1', email: 'ana@exemplo.com', name: 'Ana' }),
+      emit({
+        id: 'u1',
+        email: 'ana@exemplo.com',
+        name: 'Ana',
+        avatarUrl: null,
+      }),
     );
     expect(screen.getByText('signed-in:Ana')).toBeTruthy();
 

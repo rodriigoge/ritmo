@@ -8,12 +8,21 @@ import { colors } from '../../src/design-system/tokens/colors';
 import { controls } from '../../src/design-system/tokens/controls';
 import { radius } from '../../src/design-system/tokens/radius';
 import { spacing } from '../../src/design-system/tokens/spacing';
-import { typography } from '../../src/design-system/tokens/typography';
+import {
+  fontFamilies,
+  typography,
+} from '../../src/design-system/tokens/typography';
 import { HabitCard } from '../../src/features/habits/components/HabitCard';
 import { useHabits } from '../../src/features/habits/hooks/useHabits';
 import { Button } from '../../src/design-system/components/Button/Button';
 import { formatLocalDate } from '../../src/shared/date/dateUtils';
-import { AccountButton } from '../../src/features/auth/components/AccountButton';
+import { TopBar } from '../../src/design-system/components/TopBar/TopBar';
+import { useAuth } from '../../src/features/auth/AuthProvider';
+import { ProfileButton } from '../../src/features/auth/components/UserAvatar';
+import {
+  CreateHabitHint,
+  EmptyHabits,
+} from '../../src/features/habits/components/EmptyHabits';
 
 export default function Home() {
   const router = useRouter();
@@ -28,7 +37,12 @@ export default function Home() {
     completionError,
     recordFeedback,
   } = useHabits();
+  const { user } = useAuth();
   const [creating, setCreating] = useState(false);
+  const doneToday = habits.filter((habit) =>
+    habit.completedDates.includes(today),
+  ).length;
+  const firstName = user?.name.trim().split(/\s+/)[0];
   return (
     <SafeAreaView style={styles.screen}>
       <View
@@ -64,33 +78,32 @@ export default function Home() {
           )}
           ItemSeparatorComponent={HabitSpacing}
           contentContainerStyle={styles.content}
-          ListEmptyComponent={
-            !loading && !error ? (
-              <View style={styles.empty}>
-                <Text accessibilityRole="header" style={styles.title}>
-                  Nenhum hábito ainda
-                </Text>
-                <Text style={styles.date}>
-                  Crie um hábito e acompanhe sua evolução todos os dias.
-                </Text>
-                <Button
-                  label="Criar primeiro hábito"
-                  onPress={() => setCreating(true)}
-                />
-              </View>
-            ) : null
-          }
+          ListEmptyComponent={!loading && !error ? <EmptyHabits /> : null}
           ListHeaderComponent={
             <View style={styles.header}>
-              <View style={styles.titleRow}>
-                <Text accessibilityRole="header" style={styles.title}>
-                  Meus hábitos
+              <TopBar
+                align="start"
+                title="Meus hábitos"
+                right={
+                  user ? (
+                    <ProfileButton
+                      user={user}
+                      onPress={() => router.push('/profile')}
+                    />
+                  ) : null
+                }
+              />
+              <View style={styles.intro}>
+                {firstName ? (
+                  <Text style={styles.greeting}>Olá, {firstName}</Text>
+                ) : null}
+                <Text style={styles.date}>
+                  {formatLocalDate(today, { day: 'numeric', month: 'long' })}
                 </Text>
-                <AccountButton />
               </View>
-              <Text style={styles.date}>
-                {formatLocalDate(today, { day: 'numeric', month: 'long' })}
-              </Text>
+              {habits.length > 0 && (
+                <TodayProgress done={doneToday} total={habits.length} />
+              )}
               {loading && (
                 <Text style={styles.date} accessibilityLiveRegion="polite">
                   Carregando hábitos…
@@ -107,6 +120,11 @@ export default function Home() {
             </View>
           }
         />
+        {!loading && !error && habits.length === 0 && (
+          <View style={styles.hint}>
+            <CreateHabitHint />
+          </View>
+        )}
         <View style={styles.action}>
           <IconButton
             variant="floating"
@@ -135,28 +153,77 @@ export default function Home() {
     </SafeAreaView>
   );
 }
+function TodayProgress({ done, total }: { done: number; total: number }) {
+  const label =
+    done === total
+      ? 'Tudo feito hoje. Bom ritmo!'
+      : `${done} de ${total} ${total === 1 ? 'hábito feito' : 'hábitos feitos'} hoje`;
+  return (
+    <View
+      style={styles.progress}
+      accessible
+      accessibilityRole="progressbar"
+      accessibilityLabel={label}
+      accessibilityValue={{ min: 0, max: total, now: done }}
+    >
+      <Text style={styles.progressLabel}>{label}</Text>
+      <View style={styles.progressTrack}>
+        <View
+          style={[
+            styles.progressFill,
+            { width: `${Math.round((done / total) * 100)}%` },
+          ]}
+        />
+      </View>
+    </View>
+  );
+}
 function HabitSpacing() {
   return <View style={styles.habitSpacing} />;
 }
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.background },
+  screen: { flex: 1, backgroundColor: colors.canvas },
   body: { flex: 1 },
   habitSpacing: { height: spacing.md },
   content: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xxxl * 2 },
   header: {
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.lg,
-    gap: spacing.sm,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.xl,
+    gap: spacing.lg,
   },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  intro: { gap: 2, marginTop: spacing.md },
+  greeting: {
+    ...typography.title,
+    fontFamily: fontFamilies.bold,
+    color: colors.ink,
+    letterSpacing: -0.4,
+  },
+  date: { ...typography.body, color: colors.textSecondary },
+  progress: {
+    borderWidth: 1,
+    borderColor: colors.cardBorder,
+    borderRadius: 20,
+    padding: spacing.lg,
     gap: spacing.md,
   },
-  empty: { paddingVertical: spacing.xxxl, gap: spacing.lg },
-  title: { ...typography.title, color: colors.textPrimary },
-  date: { ...typography.body, color: colors.textSecondary },
+  progressLabel: {
+    ...typography.body,
+    fontFamily: fontFamilies.semibold,
+    color: colors.ink,
+  },
+  progressTrack: {
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.chip,
+    overflow: 'hidden',
+  },
+  progressFill: { height: 8, borderRadius: 4, backgroundColor: colors.ink },
+  // Ends just above the left half of the floating button.
+  hint: {
+    position: 'absolute',
+    right: spacing.lg + controls.minTouchTarget / 2,
+    bottom: spacing.lg + controls.minTouchTarget + spacing.xs,
+  },
   action: {
     position: 'absolute',
     right: spacing.lg,

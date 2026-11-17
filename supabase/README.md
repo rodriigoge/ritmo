@@ -13,11 +13,14 @@ políticas de RLS em `migrations/`. Leva uns 20 minutos na primeira vez.
 
 ## 2. Banco de dados
 
-Abra **SQL Editor → New query**, cole o conteúdo de
-`migrations/20261117120000_create_habits.sql` e clique em **Run**.
+Abra **SQL Editor → New query** e rode, em ordem, cada arquivo de
+`migrations/` (cole o conteúdo e clique em **Run**):
 
-Isso cria as tabelas `habits` e `habit_completions`, as políticas de acesso por
-usuário e a função `toggle_habit_completion`.
+1. `20261117120000_create_habits.sql`: tabelas `habits` e `habit_completions`,
+   as políticas de acesso por usuário e a função `toggle_habit_completion`.
+2. `20261117130000_delete_own_account.sql`: função `delete_own_account`, usada
+   em **Perfil → Excluir conta**. Ela apaga só a conta de quem chama e, em
+   cascata, os hábitos dessa conta.
 
 Com a [Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started),
 o equivalente é `npx supabase link --project-ref <id>` e depois `npx supabase db push`.

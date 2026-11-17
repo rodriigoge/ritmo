@@ -38,7 +38,17 @@ function toAuthUser(user: User | null | undefined): AuthUser | null {
     (typeof metadata.full_name === 'string' && metadata.full_name) ||
     (typeof metadata.name === 'string' && metadata.name) ||
     email.split('@')[0];
-  return { id: user.id, email, name };
+  return { id: user.id, email, name, avatarUrl: avatarFrom(metadata) };
+}
+
+function avatarFrom(metadata: Record<string, unknown>): string | null {
+  const url =
+    (typeof metadata.avatar_url === 'string' && metadata.avatar_url) ||
+    (typeof metadata.picture === 'string' && metadata.picture) ||
+    null;
+  if (!url?.startsWith('https://')) return null;
+  // Google serves a 96px photo by default; ask for one sharp on the profile.
+  return url.replace(/=s\d+-c$/, '=s256-c');
 }
 
 function toFailure(error: unknown): AuthFailure {
@@ -193,6 +203,34 @@ export const supabaseAuthService: AuthService = {
     } catch (error) {
       throw toFailure(error);
     }
+  },
+
+  async updateProfile({ name }) {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        data: { full_name: name.trim() },
+      });
+      if (error) throw error;
+    } catch (error) {
+      throw toFailure(error);
+    }
+  },
+
+  async deleteAccount() {
+    try {
+      const { error } = await supabase.rpc('delete_own_account');
+      if (error) {
+        throw new AuthFailure(
+          'Não foi possível excluir sua conta agora. Tente novamente.',
+        );
+      }
+    } catch (error) {
+      throw toFailure(error);
+    }
+    // The user no longer exists on the server, so only the local session
+    // is left to clear.
+    await supabase.auth.signOut({ scope: 'local' }).catch(() => {});
+    await GoogleSignin.signOut().catch(() => {});
   },
 
   async signOut() {

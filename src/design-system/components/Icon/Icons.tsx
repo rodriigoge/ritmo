@@ -1,0 +1,84 @@
+import Svg, { Path } from 'react-native-svg';
+import { colors } from '../../tokens/colors';
+
+// Small line icons in the same ink stroke as the illustrations. They are
+// decorative: the control that holds one always carries its own label.
+
+type IconProps = { size?: number; color?: string };
+
+function Line({
+  d,
+  size = 20,
+  color = colors.ink,
+  strokeWidth = 2.2,
+}: IconProps & { d: string; strokeWidth?: number }) {
+  return (
+    <Svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      accessible={false}
+      importantForAccessibility="no-hide-descendants"
+    >
+      <Path
+        d={d}
+        stroke={color}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+    </Svg>
+  );
+}
+
+export function ChevronLeftIcon(props: IconProps) {
+  return <Line d="M15 5 L8 12 L15 19" strokeWidth={2.5} {...props} />;
+}
+
+export function ChevronRightIcon(props: IconProps) {
+  return <Line d="M9 5 L16 12 L9 19" strokeWidth={2.5} {...props} />;
+}
+
+export function ArrowRightIcon(props: IconProps) {
+  return (
+    <Line d="M5 12 H19 M13 6 L19 12 L13 18" strokeWidth={2.4} {...props} />
+  );
+}
+
+export function FlameIcon(props: IconProps) {
+  return (
+    <Line
+      d="M12 21 C8 21 5.5 18.4 5.5 15 C5.5 11.5 8.5 9.5 9.5 6.5 C10 5 9.8 3.8 9.5 3 C13 4.2 15 7 15 10 C16 9.2 16.6 8.2 16.8 7 C18.2 8.6 18.5 11 18.5 14.5 C18.5 18.4 15.8 21 12 21 Z M12 21 C10.3 21 9.2 19.8 9.2 18.2 C9.2 16.2 11 15.4 11.6 13.6 C13.6 14.6 14.8 16.2 14.8 18.2 C14.8 19.8 13.7 21 12 21 Z"
+      strokeWidth={1.8}
+      {...props}
+    />
+  );
+}
+
+export function PencilIcon(props: IconProps) {
+  return (
+    <Line
+      d="M4 20 L4.8 16 L15.6 5.2 A2.3 2.3 0 0 1 18.8 8.4 L8 19.2 Z M13.8 7 L17 10.2"
+      {...props}
+    />
+  );
+}
+
+export function TrashIcon(props: IconProps) {
+  return (
+    <Line
+      d="M4 7 H20 M9 7 V4.5 H15 V7 M6.5 7 L7.5 20 H16.5 L17.5 7 M10.2 11 V16 M13.8 11 V16"
+      {...props}
+    />
+  );
+}
+
+export function SignOutIcon(props: IconProps) {
+  return (
+    <Line
+      d="M10 4 H6 A2 2 0 0 0 4 6 V18 A2 2 0 0 0 6 20 H10 M15 8 L19 12 L15 16 M19 12 H9"
+      {...props}
+    />
+  );
+}
