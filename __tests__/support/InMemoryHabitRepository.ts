@@ -16,7 +16,10 @@ import { validateCompletionDate } from '../../src/features/habits/domain/validat
 import type {
   HabitRepository,
   HabitWithCompletedDates,
+  ImportHabitInput,
+  ImportResult,
 } from '../../src/features/habits/repository/HabitRepository';
+import { habitNameKey } from '../../src/features/habits/repository/SupabaseHabitRepository';
 
 /** Test double with the same contract as the Supabase repository and its
  * SQL (cascade delete, one completion per day, no future dates). */
@@ -124,5 +127,46 @@ export class InMemoryHabitRepository implements HabitRepository {
       createdAt: new Date().toISOString(),
     });
     return true;
+  }
+
+  async importHabits(
+    habits: readonly ImportHabitInput[],
+  ): Promise<ImportResult> {
+    let createdHabits = 0;
+    let addedDays = 0;
+    for (const input of habits) {
+      let habit = this.habits.find(
+        (item) => habitNameKey(item.name) === habitNameKey(input.name),
+      );
+      if (!habit) {
+        const timestamp = input.createdAt ?? new Date().toISOString();
+        habit = {
+          id: this.nextId(),
+          name: normalizeHabitName(input.name),
+          createdAt: timestamp,
+          updatedAt: timestamp,
+        };
+        this.habits.push(habit);
+        createdHabits += 1;
+      }
+      for (const date of input.completedDates) {
+        const exists = this.completions.some(
+          (item) => item.habitId === habit.id && item.date === date,
+        );
+        if (exists) continue;
+        this.completions.push({
+          id: this.nextId(),
+          habitId: habit.id,
+          date,
+          createdAt: new Date().toISOString(),
+        });
+        addedDays += 1;
+      }
+    }
+    return {
+      createdHabits,
+      mergedHabits: habits.length - createdHabits,
+      addedDays,
+    };
   }
 }

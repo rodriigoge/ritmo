@@ -3,6 +3,9 @@ import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../../../design-system/components/Button/Button';
 import {
+  BellIcon,
+  ExportIcon,
+  ImportIcon,
   PencilIcon,
   SignOutIcon,
   ThemeIcon,
@@ -19,6 +22,8 @@ import {
   useTheme,
 } from '../../../design-system/theme/ThemeProvider';
 import { THEME_LABELS } from './ThemeScreen';
+import { useReminders } from '../../reminders/RemindersProvider';
+import { formatReminderTime } from '../../reminders/reminderSettings';
 import { spacing } from '../../../design-system/tokens/spacing';
 import {
   fontFamilies,
@@ -34,15 +39,27 @@ export function ProfileScreen({
   onEditProfile,
   onDeleteAccount,
   onTheme,
+  onNotifications,
+  onExport,
+  onImport,
+  dataBusy = false,
+  dataMessage,
 }: {
   onBack: () => void;
   onEditProfile: () => void;
   onTheme: () => void;
+  onNotifications: () => void;
   onDeleteAccount: () => void;
+  onExport: () => void;
+  onImport: () => void;
+  /** True while the file picker or share sheet is being prepared. */
+  dataBusy?: boolean;
+  dataMessage?: { tone: 'error' | 'info'; text: string };
 }) {
   const styles = useStyles();
   const colors = useColors();
   const { preference } = useTheme();
+  const { settings: reminder } = useReminders();
   const { user, signOut } = useAuth();
   const [signingOut, setSigningOut] = useState(false);
   const [error, setError] = useState<string>();
@@ -83,12 +100,42 @@ export function ProfileScreen({
             onPress={onTheme}
           />
           <OptionRow
+            label="Notificações"
+            value={
+              reminder.enabled ? formatReminderTime(reminder) : 'Desligadas'
+            }
+            icon={<BellIcon size={20} />}
+            onPress={onNotifications}
+          />
+          <OptionRow
             label="Excluir conta"
             tone="danger"
             icon={<TrashIcon size={20} color={colors.danger} />}
             onPress={onDeleteAccount}
           />
         </OptionList>
+
+        <Text accessibilityRole="header" style={styles.section}>
+          Seus dados
+        </Text>
+        <OptionList>
+          <OptionRow
+            label="Exportar hábitos"
+            value="JSON ou CSV"
+            icon={<ExportIcon size={20} />}
+            onPress={dataBusy ? () => {} : onExport}
+          />
+          <OptionRow
+            label="Importar hábitos"
+            icon={<ImportIcon size={20} />}
+            onPress={dataBusy ? () => {} : onImport}
+          />
+        </OptionList>
+        {dataMessage ? (
+          <View style={styles.dataMessage}>
+            <FormMessage message={dataMessage.text} tone={dataMessage.tone} />
+          </View>
+        ) : null}
 
         <View style={styles.footer}>
           <FormMessage message={error} />
@@ -132,6 +179,16 @@ const useStyles = makeStyles((colors) => ({
     color: colors.textSecondary,
     textAlign: 'center',
   },
+  section: {
+    ...typography.label,
+    color: colors.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
+    marginTop: spacing.xl,
+    marginBottom: spacing.sm,
+    marginLeft: spacing.xs,
+  },
+  dataMessage: { marginTop: spacing.md },
   footer: {
     flexGrow: 1,
     justifyContent: 'flex-end',

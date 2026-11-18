@@ -6,7 +6,10 @@ import type { LocalDate } from '../../../shared/date/LocalDate';
 import type { Habit } from '../domain/Habit';
 import { normalizeHabitName } from '../domain/HabitInput';
 import { validateCompletionDate } from '../domain/validateCompletionDate';
-import type { HabitRepository } from '../repository/HabitRepository';
+import type {
+  HabitRepository,
+  ImportHabitInput,
+} from '../repository/HabitRepository';
 import { calculateHabitMetrics } from '../domain/calculateHabitMetrics';
 
 export type HabitWithHistory = Habit & { completedDates: LocalDate[] };
@@ -235,7 +238,15 @@ export function useHabitsState(repository: HabitRepository) {
     operation.settled = persist();
   }
 
+  /** Imports habits from a file, then reloads the list from the server. */
+  async function importHabits(items: readonly ImportHabitInput[]) {
+    const result = await repository.importHabits(items);
+    refresh();
+    return result;
+  }
+
   return {
+    importHabits,
     habits,
     loading,
     error,

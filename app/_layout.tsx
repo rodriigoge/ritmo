@@ -23,6 +23,8 @@ import {
 import { removeLegacyLocalHabits } from '../src/shared/removeLegacyLocalHabits';
 
 void SplashScreen.preventAutoHideAsync().catch(() => {});
+// Fade from the native splash into the first screen instead of cutting.
+SplashScreen.setOptions({ duration: 250, fade: true });
 removeLegacyLocalHabits();
 
 export default function RootLayout() {

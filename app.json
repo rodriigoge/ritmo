@@ -3,6 +3,9 @@
     "name": "Ritmo",
     "slug": "ritmo",
     "version": "0.0.2",
+    "runtimeVersion": {
+      "policy": "fingerprint"
+    },
     "scheme": "ritmo",
     "icon": "./assets/icon/icon.png",
     "userInterfaceStyle": "automatic",
@@ -11,7 +14,26 @@
       "expo-router",
       "expo-sqlite",
       "expo-font",
-      "expo-splash-screen"
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/icon/splash-icon.png",
+          "imageWidth": 140,
+          "resizeMode": "contain",
+          "backgroundColor": "#FFFFFF",
+          "dark": {
+            "image": "./assets/icon/splash-icon-dark.png",
+            "backgroundColor": "#121512"
+          }
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon/notification-icon.png",
+          "color": "#3368A0"
+        }
+      ]
     ],
     "ios": {
       "bundleIdentifier": "com.ritmo.app"
@@ -30,6 +52,11 @@
         "projectId": "b5f447cd-1534-4862-af3c-50e003e526f8"
       }
     },
-    "owner": "rodrigoge"
+    "owner": "rodrigoge",
+    "updates": {
+      "url": "https://u.expo.dev/b5f447cd-1534-4862-af3c-50e003e526f8",
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0
+    }
   }
 }

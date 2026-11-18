@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   Animated,
-  Pressable,
+  Pressable,
   Text,
   View,
   useAnimatedValue,
@@ -75,15 +75,18 @@ export function HabitCalendar({
     ]).start();
   }, [gridOpacity, month]);
 
+  const monthLabel = formatLocalDate(month, { month: 'long', year: 'numeric' });
   return (
     <View style={styles.calendar}>
       <View style={styles.navigation}>
         <Text
           accessibilityRole="header"
+          accessibilityLabel={monthLabel}
           accessibilityLiveRegion="polite"
           style={styles.title}
         >
-          {formatLocalDate(month, { month: 'long', year: 'numeric' })}
+          {/* "novembro de 2026" → "Novembro de 2026": only the first letter. */}
+          {monthLabel.charAt(0).toUpperCase() + monthLabel.slice(1)}
         </Text>
         <View style={styles.arrows}>
           <MonthButton
@@ -191,7 +194,6 @@ const useStyles = makeStyles((colors) => ({
     fontSize: 18,
     flexShrink: 1,
     color: colors.ink,
-    textTransform: 'capitalize',
   },
   arrows: { flexDirection: 'row', gap: spacing.sm },
   navButton: {

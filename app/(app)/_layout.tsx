@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 import { useState } from 'react';
 import { useColors } from '../../src/design-system/theme/ThemeProvider';
+import { RemindersProvider } from '../../src/features/reminders/RemindersProvider';
 import { HabitsProvider } from '../../src/features/habits/hooks/useHabits';
 import { SupabaseHabitRepository } from '../../src/features/habits/repository/SupabaseHabitRepository';
 import { supabase } from '../../src/shared/supabase/client';
@@ -12,12 +13,14 @@ export default function SignedInLayout() {
   const [repository] = useState(() => new SupabaseHabitRepository(supabase));
   return (
     <HabitsProvider repository={repository}>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: colors.canvas },
-        }}
-      />
+      <RemindersProvider>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: colors.canvas },
+          }}
+        />
+      </RemindersProvider>
     </HabitsProvider>
   );
 }

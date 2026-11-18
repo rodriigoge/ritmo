@@ -126,3 +126,30 @@ export function ThemeIcon({ size = 20, color }: IconProps) {
     </Svg>
   );
 }
+
+/** Arrow leaving a tray. */
+export function ExportIcon(props: IconProps) {
+  return (
+    <Line d="M12 15 V4 M7.5 8.5 L12 4 L16.5 8.5 M5 14 V19 H19 V14" {...props} />
+  );
+}
+
+/** Arrow landing in a tray. */
+export function ImportIcon(props: IconProps) {
+  return (
+    <Line
+      d="M12 4 V15 M7.5 10.5 L12 15 L16.5 10.5 M5 14 V19 H19 V14"
+      {...props}
+    />
+  );
+}
+
+/** Bell for notifications. */
+export function BellIcon(props: IconProps) {
+  return (
+    <Line
+      d="M6 16.5 V11 A6 6 0 0 1 18 11 V16.5 L19.5 18 H4.5 Z M10 20.5 A2 2 0 0 0 14 20.5"
+      {...props}
+    />
+  );
+}

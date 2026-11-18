@@ -15,7 +15,22 @@ import {
 import type {
   HabitRepository,
   HabitWithCompletedDates,
+  ImportHabitInput,
+  ImportResult,
 } from './HabitRepository';
+
+// Keeps each request well under PostgREST's payload limits.
+const IMPORT_CHUNK = 500;
+
+function chunks<T>(items: readonly T[], size: number): T[][] {
+  const result: T[][] = [];
+  for (let index = 0; index < items.length; index += size)
+    result.push(items.slice(index, index + size));
+  return result;
+}
+
+export const habitNameKey = (name: string) =>
+  name.trim().toLocaleLowerCase('pt-BR');
 
 type HabitRow = Pick<
   Database['public']['Tables']['habits']['Row'],
@@ -156,5 +171,55 @@ export class SupabaseHabitRepository implements HabitRepository {
     });
     if (error) fail(error);
     return data;
+  }
+
+  async importHabits(
+    habits: readonly ImportHabitInput[],
+  ): Promise<ImportResult> {
+    const existing = new Map(
+      (await this.findAll()).map((habit) => [
+        habitNameKey(habit.name),
+        habit.id,
+      ]),
+    );
+    const fresh = habits.filter(
+      (habit) => !existing.has(habitNameKey(habit.name)),
+    );
+    const ids = new Map(existing);
+    for (const part of chunks(fresh, IMPORT_CHUNK)) {
+      const { data, error } = await this.client
+        .from('habits')
+        .insert(
+          part.map((habit) => ({
+            name: normalizeHabitName(habit.name),
+            ...(habit.createdAt ? { created_at: habit.createdAt } : {}),
+          })),
+        )
+        .select('id, name');
+      if (error) fail(error);
+      for (const row of data) ids.set(habitNameKey(row.name), row.id);
+    }
+
+    const completions = habits.flatMap((habit) => {
+      const habitId = ids.get(habitNameKey(habit.name));
+      return habitId
+        ? habit.completedDates.map((date) => ({ habit_id: habitId, date }))
+        : [];
+    });
+    let addedDays = 0;
+    for (const part of chunks(completions, IMPORT_CHUNK)) {
+      // Days already marked are skipped instead of failing the import.
+      const { data, error } = await this.client
+        .from('habit_completions')
+        .upsert(part, { onConflict: 'habit_id,date', ignoreDuplicates: true })
+        .select('id');
+      if (error) fail(error);
+      addedDays += data.length;
+    }
+    return {
+      createdHabits: fresh.length,
+      mergedHabits: habits.length - fresh.length,
+      addedDays,
+    };
   }
 }

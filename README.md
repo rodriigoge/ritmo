@@ -1,116 +1,108 @@
-# Stepp
+# Ritmo
 
-Um app de hábitos para acompanhar sua consistência, um dia de cada vez.
+Um app de hábitos para manter o seu ritmo, um dia de cada vez.
 
-O Stepp combina uma interface minimalista com um histórico fácil de editar. Crie um hábito apenas com o nome, registre suas conclusões e acompanhe a sequência atual, o total acumulado e seu recorde. Os dados ficam no dispositivo e o app funciona offline.
+O Ritmo tem uma interface minimalista em traço preto e branco, com o Pingo, o mascote do app, como companhia. Crie um hábito só com o nome, marque cada dia com um toque e acompanhe a sequência, o total e a sua taxa de conclusão. Sua conta e seus hábitos ficam salvos na nuvem (Supabase), então nada se perde ao trocar de celular.
 
-## Demonstração
+## Telas
 
-[Assista ao vídeo do Stepp](docs/media/stepp-video-app.mp4)
+<p align="center">
+  <img src="docs/screenshots/sign-up.png" alt="Cadastro com o Pingo acenando, login com Google e formulário de nome, e-mail e senha" width="200" />
+  &nbsp;
+  <img src="docs/screenshots/home.jpg" alt="Home com saudação, progresso do dia e cards de hábitos com os últimos seis dias" width="200" />
+  &nbsp;
+  <img src="docs/screenshots/habit-details.jpg" alt="Detalhes do hábito com cards de dias concluídos, sequência e porcentagem, e calendário do mês" width="200" />
+  &nbsp;
+  <img src="docs/screenshots/profile.jpg" alt="Perfil com editar perfil, temas, notificações, excluir conta, exportar e importar hábitos" width="200" />
+</p>
+
+<p align="center"><sub>Cadastro · Home · Detalhes do hábito · Perfil</sub></p>
 
 ## Funcionalidades
 
-- **Registro em um toque:** marque ou desmarque uma conclusão diretamente na Home.
-- **Últimos seis dias:** visualize os cinco dias anteriores e o dia atual em cada hábito.
-- **Histórico completo:** navegue pelo calendário e corrija registros de dias passados, inclusive anteriores ao cadastro do hábito.
-- **Progresso sempre visível:** acompanhe dias seguidos, total de conclusões e melhor sequência.
-- **Gerenciamento simples:** edite o nome ou exclua um hábito com confirmação.
-- **Feedback imediato:** as marcações e métricas são atualizadas na hora, com animações discretas e feedback tátil quando disponível.
+- **Onboarding e conta:** três telas de boas-vindas na primeira abertura, cadastro e login por e-mail ou com Google, confirmação de e-mail e recuperação de senha.
+- **Registro em um toque:** marque ou desmarque os últimos seis dias direto na Home, com um check desenhado, um pequeno "pop" e confetes ao concluir o dia de hoje ou bater um recorde.
+- **Progresso do dia:** a Home mostra quantos hábitos você já fez hoje.
+- **Detalhes do hábito:** dias concluídos, sequência atual, porcentagem de conclusão, melhor sequência e um calendário para corrigir qualquer dia do histórico.
+- **Perfil:** foto do Google, editar nome, excluir conta (com todos os dados) e sair.
+- **Tema claro e escuro:** escolha Claro, Escuro ou Sistema; a preferência fica salva no celular.
+- **Lembrete diário:** uma notificação local por dia, no horário que você escolher.
+- **Exportar e importar:** leve seus hábitos em JSON (backup completo) ou CSV (planilhas) e traga de volta; hábitos com o mesmo nome são combinados, sem duplicar dias.
 
-A interface usa a fonte Inter, cards brancos e uma paleta discreta, com foco em legibilidade e clareza.
-
-## Como funciona
-
-1. Toque no botão **+** e informe o nome do hábito.
-2. Toque no indicador de um dia para marcar ou desmarcar sua conclusão.
-3. Abra o card para consultar as métricas e editar o histórico no calendário.
-4. Use o menu dos três pontos para editar ou excluir o hábito.
-
-Cada hábito aceita uma conclusão por dia. Datas futuras não podem ser marcadas. A sequência atual permanece ativa enquanto o dia de hoje ainda está em andamento, desde que ontem tenha sido concluído. Qualquer alteração no histórico recalcula o total, a sequência atual e o recorde.
-
-## Dados locais
-
-Hábitos e conclusões são armazenados em SQLite no dispositivo. Não é necessário criar uma conta nem ter conexão com a internet para usar o app. A fonte também é incluída no aplicativo.
-
-Os dados não são sincronizados entre dispositivos. Excluir um hábito remove seu histórico de conclusões.
+Cada hábito aceita uma conclusão por dia e datas futuras não podem ser marcadas. A sequência continua ativa enquanto hoje ainda está em andamento, desde que ontem tenha sido concluído.
 
 ## Tecnologias
 
-| Área         | Tecnologia                          |
-| ------------ | ----------------------------------- |
-| Aplicativo   | React Native e Expo SDK 57          |
-| Linguagem    | TypeScript                          |
-| Navegação    | Expo Router                         |
-| Persistência | SQLite com expo-sqlite              |
-| Tipografia   | Inter com expo-font                 |
-| Testes       | Jest e React Native Testing Library |
+| Área          | Tecnologia                                          |
+| ------------- | --------------------------------------------------- |
+| Aplicativo    | React Native 0.86 e Expo SDK 57 (development build) |
+| Linguagem     | TypeScript                                          |
+| Navegação     | Expo Router, com rotas protegidas por sessão        |
+| Backend       | Supabase: Auth e Postgres com Row Level Security    |
+| Login social  | Google Sign-In nativo                               |
+| Ilustrações   | react-native-svg (logo, Pingo e cenas em traço)     |
+| Notificações  | expo-notifications (lembrete local)                 |
+| Build e envio | EAS Build (APK) e EAS Update (atualizações pelo ar) |
+| Testes        | Jest e React Native Testing Library                 |
 
-## Executar localmente
+## Configuração
 
-### Requisitos
+O passo a passo completo do Supabase, do login com Google e do EAS está em [supabase/README.md](supabase/README.md). Em resumo:
 
-- Node.js 24.15 ou superior na linha 24 e npm.
-- Expo Go compatível com o SDK 57 em um dispositivo físico, ou um emulador Android configurado.
-- Para o simulador iOS: macOS e Xcode.
+1. Crie um projeto no Supabase e rode as migrações de `supabase/migrations/`.
+2. Copie `.env.example` para `.env` e preencha a URL e a chave pública do Supabase e o Client ID web do Google.
+3. Configure o login com Google (clientes Web e Android no Google Cloud).
 
-### Instalação
+## Executar
 
-Na pasta do projeto, instale as dependências e inicie o servidor de desenvolvimento:
+O login com Google usa código nativo, por isso o app **não roda no Expo Go**: é preciso um development build.
 
 ```sh
 npm ci
+npx eas-cli@latest build --profile development --platform android
 npm start
 ```
 
-Abra o projeto no Expo Go pelo QR code exibido no terminal. Para uma conexão local, o celular e o computador devem estar na mesma rede.
+Instale o APK gerado no celular e abra o app com o celular na mesma rede do computador.
 
-Para abrir em um emulador Android:
+### Usar sem computador
 
-```sh
-npm run android
-```
-
-Para abrir no simulador iOS, no macOS:
+O perfil `preview` gera um APK com o código embutido, que funciona em qualquer rede:
 
 ```sh
-npm run ios
-```
-
-Se alterações não aparecerem, reinicie o servidor com o cache limpo e recarregue o app:
-
-```sh
-npx expo start --clear
+npm run build:preview    # novo APK, quando mudar algo nativo
+npm run update:preview   # publica mudanças de JavaScript no APK instalado
 ```
 
 ## Comandos de desenvolvimento
 
-| Comando                | Descrição                    |
-| ---------------------- | ---------------------------- |
-| `npm start`            | Inicia o servidor Expo       |
-| `npm run android`      | Abre o app no Android        |
-| `npm run ios`          | Abre o app no simulador iOS  |
-| `npm run typecheck`    | Verifica os tipos TypeScript |
-| `npm run lint`         | Verifica o código com ESLint |
-| `npm test`             | Executa os testes            |
-| `npm run format:check` | Verifica a formatação        |
-| `npm run format`       | Aplica a formatação          |
-
-Os testes cobrem cálculo de sequências, datas, persistência SQLite e interações das telas. Os testes de persistência usam o SQLite nativo do Node.js.
+| Comando                  | Descrição                                       |
+| ------------------------ | ----------------------------------------------- |
+| `npm start`              | Inicia o Metro para o development build         |
+| `npm run build:preview`  | Gera o APK standalone no EAS                    |
+| `npm run update:preview` | Publica uma atualização pelo ar (canal preview) |
+| `npm run typecheck`      | Verifica os tipos TypeScript                    |
+| `npm run lint`           | Verifica o código com ESLint                    |
+| `npm test`               | Executa os testes                               |
+| `npm run format:check`   | Verifica a formatação                           |
+| `npm run format`         | Aplica a formatação                             |
 
 ## Organização do código
 
 ```text
-app/                         Rotas e layout do aplicativo
+app/                         Rotas (onboarding, login, área logada e perfil)
 src/
-  database/                  Conexão SQLite e migrações
-  design-system/             Tokens visuais e componentes compartilhados
-  features/habits/
-    components/              Home, calendário, formulários e modais
-    domain/                  Regras de conclusão e cálculo de métricas
-    hooks/                   Estado e coordenação das interações
-    repository/              Acesso aos hábitos e ao histórico
-  shared/date/               Operações com datas locais
+  design-system/             Tokens, tema claro/escuro e componentes
+  features/
+    auth/                    Conta, login com Google e telas de acesso
+    habits/                  Home, detalhes, calendário, métricas,
+                             repositório Supabase e importar/exportar
+    onboarding/              Onboarding e as ilustrações do Pingo
+    profile/                 Perfil, editar, temas e excluir conta
+    reminders/               Lembrete diário
+  shared/                    Datas locais e cliente Supabase
+supabase/                    Migrações SQL e guia de configuração
 __tests__/                   Testes automatizados
 ```
 
-As métricas são derivadas do histórico de conclusões. Cada conclusão usa uma data de calendário local no formato `YYYY-MM-DD`, e o banco impede registros duplicados para o mesmo hábito e dia.
+As métricas são derivadas do histórico de conclusões. Cada conclusão usa uma data local no formato `YYYY-MM-DD`, e o banco impede registros duplicados para o mesmo hábito e dia.

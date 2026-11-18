@@ -89,6 +89,10 @@ describe('Profile', () => {
           onBack={jest.fn()}
           onEditProfile={onEditProfile}
           onDeleteAccount={onDeleteAccount}
+          onTheme={jest.fn()}
+          onNotifications={jest.fn()}
+          onExport={jest.fn()}
+          onImport={jest.fn()}
         />
       </TestAuth>,
     );
@@ -117,6 +121,10 @@ describe('Profile', () => {
           onBack={jest.fn()}
           onEditProfile={jest.fn()}
           onDeleteAccount={jest.fn()}
+          onTheme={jest.fn()}
+          onNotifications={jest.fn()}
+          onExport={jest.fn()}
+          onImport={jest.fn()}
         />
       </TestAuth>,
     );

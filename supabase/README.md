@@ -119,6 +119,26 @@ No primeiro build, aceite gerar o Android Keystore. O SHA-1 dele, mostrado em
 `npx eas-cli@latest credentials --platform android`, é o que vai no cliente
 OAuth Android do Google Cloud. O mesmo keystore assina os dois perfis.
 
+### Usar sem computador (APK `preview`) e atualizar pelo ar
+
+O perfil `preview` gera um APK com o JavaScript embutido: funciona em qualquer
+rede, sem `npx expo start`. Ele também recebe atualizações pelo ar (EAS
+Update) no canal `preview`.
+
+```sh
+npm run build:preview    # novo APK: só quando mudar algo nativo
+npm run update:preview   # publica mudanças de JavaScript para o APK instalado
+```
+
+- O app procura atualização ao abrir, baixa em segundo plano e aplica na
+  abertura seguinte (feche e abra o app duas vezes para ver na hora).
+- `runtimeVersion` usa a política `fingerprint`: uma atualização só chega a
+  builds com o mesmo código nativo. Se você adicionar um pacote nativo, mudar
+  o ícone, permissões ou plugins, gere um novo APK; o `eas update` avisa
+  quando o fingerprint mudou.
+- `update:preview` usa as variáveis do ambiente `preview` do EAS, não o
+  `.env` local.
+
 ## Dados antigos
 
 Os hábitos que ficavam no SQLite do aparelho (`habitual.db`) não são migrados.
