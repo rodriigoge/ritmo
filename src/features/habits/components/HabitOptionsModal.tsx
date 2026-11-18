@@ -7,7 +7,7 @@ import {
   OptionList,
   OptionRow,
 } from '../../../design-system/components/OptionList/OptionList';
-import { colors } from '../../../design-system/tokens/colors';
+import { useColors } from '../../../design-system/theme/ThemeProvider';
 
 /** Menu behind the ⋯ button of the habit details. Choosing an option swaps
  * straight to the next card, so there is no exit animation to wait for. */
@@ -22,6 +22,7 @@ export function HabitOptionsModal({
   onDelete: () => void;
   onClose: () => void;
 }) {
+  const colors = useColors();
   return (
     <FloatingSheet title={name} onClose={onClose}>
       <OptionList>

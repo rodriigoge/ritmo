@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors } from '../../tokens/colors';
+import { Pressable, Text, View } from 'react-native';
+import { makeStyles } from '../../theme/ThemeProvider';
 import { controls } from '../../tokens/controls';
 import { spacing } from '../../tokens/spacing';
 import { fontFamilies } from '../../tokens/typography';
@@ -21,6 +21,7 @@ export function TopBar({
   right?: ReactNode;
   align?: 'center' | 'start';
 }) {
+  const styles = useStyles();
   const start = align === 'start';
   return (
     <View style={styles.bar}>
@@ -49,7 +50,7 @@ export function TopBar({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   bar: {
     minHeight: controls.minTouchTarget,
     flexDirection: 'row',
@@ -77,4 +78,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   pressed: { opacity: controls.pressedOpacity },
-});
+}));

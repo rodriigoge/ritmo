@@ -1,23 +1,26 @@
 import { useEffect } from 'react';
+import { Animated, Easing, View, useAnimatedValue } from 'react-native';
 import {
-  Animated,
-  Easing,
-  StyleSheet,
-  View,
-  useAnimatedValue,
-} from 'react-native';
-import { colors } from '../../../design-system/tokens/colors';
+  makeStyles,
+  useColors,
+} from '../../../design-system/theme/ThemeProvider';
+import type { ColorPalette } from '../../../design-system/tokens/colors';
 
 // Confetti that bursts out of a day mark. Kept for the moments that matter
 // (checking today, beating a record) so the reward stays special.
 
-const CONFETTI_COLORS = [colors.ink, colors.accent, colors.brand, '#F2B33D'];
+const CONFETTI_ROLES: (keyof ColorPalette)[] = [
+  'ink',
+  'accent',
+  'brand',
+  'confetti',
+];
 
 type Piece = {
   angle: number;
   distance: number;
   size: number;
-  color: string;
+  color: keyof ColorPalette;
   round: boolean;
   spin: number;
 };
@@ -30,7 +33,7 @@ function pieces(count: number, reach: number): Piece[] {
       angle: (index / count) * Math.PI * 2 + wobble * 0.5,
       distance: reach * (0.75 + ((index * 53) % 7) / 24),
       size: index % 3 === 0 ? 6 : 5,
-      color: CONFETTI_COLORS[index % CONFETTI_COLORS.length],
+      color: CONFETTI_ROLES[index % CONFETTI_ROLES.length],
       round: index % 2 === 0,
       spin: (index % 2 === 0 ? 1 : -1) * (90 + ((index * 29) % 90)),
     };
@@ -48,6 +51,8 @@ export function CompletionBurst({
   trigger: number;
   big?: boolean;
 }) {
+  const styles = useStyles();
+  const colors = useColors();
   const progress = useAnimatedValue(0);
 
   useEffect(() => {
@@ -84,7 +89,7 @@ export function CompletionBurst({
               marginLeft: -piece.size / 2,
               marginTop: -piece.size / 2,
               borderRadius: piece.round ? piece.size / 2 : 1,
-              backgroundColor: piece.color,
+              backgroundColor: colors[piece.color],
               opacity: progress.interpolate({
                 inputRange: [0, 0.04, 0.65, 1],
                 outputRange: [0, 1, 1, 0],
@@ -127,7 +132,7 @@ export function CompletionBurst({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   origin: {
     position: 'absolute',
     left: '50%',
@@ -136,4 +141,4 @@ const styles = StyleSheet.create({
     height: 0,
   },
   piece: { position: 'absolute' },
-});
+}));

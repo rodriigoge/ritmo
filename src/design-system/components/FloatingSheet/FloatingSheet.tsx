@@ -21,7 +21,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
-import { colors } from '../../tokens/colors';
+import { makeStyles, useColors } from '../../theme/ThemeProvider';
 import { controls } from '../../tokens/controls';
 import { spacing } from '../../tokens/spacing';
 import { fontFamilies, typography } from '../../tokens/typography';
@@ -60,6 +60,8 @@ export function FloatingSheet({
   children: ReactNode;
   ref?: Ref<FloatingSheetHandle>;
 }) {
+  const styles = useStyles();
+  const colors = useColors();
   const rise = useAnimatedValue(0);
   const reduceMotion = useRef(false);
   const closing = useRef(false);
@@ -192,10 +194,10 @@ export function FloatingSheet({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   backdrop: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: 'rgba(27, 33, 26, 0.38)',
+    backgroundColor: colors.scrim,
   },
   fill: { flex: 1 },
   keyboard: { flex: 1, justifyContent: 'flex-end' },
@@ -240,4 +242,4 @@ const styles = StyleSheet.create({
     color: colors.ink,
   },
   description: { ...typography.body, color: colors.textSecondary },
-});
+}));

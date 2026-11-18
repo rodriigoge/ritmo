@@ -1,12 +1,12 @@
 import { useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Button } from '../../../design-system/components/Button/Button';
 import {
   FloatingSheet,
   type FloatingSheetHandle,
 } from '../../../design-system/components/FloatingSheet/FloatingSheet';
-import { colors } from '../../../design-system/tokens/colors';
+import { makeStyles } from '../../../design-system/theme/ThemeProvider';
 import { spacing } from '../../../design-system/tokens/spacing';
 import { typography } from '../../../design-system/tokens/typography';
 
@@ -21,6 +21,7 @@ export function DeleteHabitConfirmation({
   onCancel: () => void;
   onDeleted: () => void;
 }) {
+  const styles = useStyles();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string>();
   const sending = useRef(false);
@@ -80,7 +81,7 @@ export function DeleteHabitConfirmation({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   actions: { gap: spacing.sm },
   error: { ...typography.body, color: colors.danger },
-});
+}));

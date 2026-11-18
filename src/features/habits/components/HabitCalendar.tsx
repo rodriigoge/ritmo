@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   Animated,
-  Pressable,
-  StyleSheet,
+  Pressable,
   Text,
   View,
   useAnimatedValue,
@@ -11,7 +10,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from '../../../design-system/components/Icon/Icons';
-import { colors } from '../../../design-system/tokens/colors';
+import { makeStyles } from '../../../design-system/theme/ThemeProvider';
 import { controls } from '../../../design-system/tokens/controls';
 import { spacing } from '../../../design-system/tokens/spacing';
 import {
@@ -44,6 +43,7 @@ export function HabitCalendar({
   today: LocalDate;
   onToggleDay?: (date: LocalDate) => void;
 }) {
+  const styles = useStyles();
   const [selectedMonth, setSelectedMonth] = useState(() => startOfMonth(today));
   const createdDate = toLocalDate(new Date(habit.createdAt));
   const firstMonth: LocalDate = '0000-01-01';
@@ -150,6 +150,7 @@ function MonthButton({
   onPress: () => void;
   children: ReactNode;
 }) {
+  const styles = useStyles();
   return (
     <Pressable
       onPress={onPress}
@@ -169,7 +170,7 @@ function MonthButton({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   calendar: {
     borderWidth: 1,
     borderColor: colors.cardBorder,
@@ -217,4 +218,4 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xs,
   },
   empty: { flex: 1, minWidth: 0 },
-});
+}));

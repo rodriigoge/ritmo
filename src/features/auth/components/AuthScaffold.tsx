@@ -4,7 +4,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
   useWindowDimensions,
@@ -13,7 +12,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { IconButton } from '../../../design-system/components/IconButton/IconButton';
 import { Logo } from '../../../design-system/components/Logo/Logo';
-import { colors } from '../../../design-system/tokens/colors';
+import {
+  makeStyles,
+  useColors,
+} from '../../../design-system/theme/ThemeProvider';
 import { controls } from '../../../design-system/tokens/controls';
 import { spacing } from '../../../design-system/tokens/spacing';
 import {
@@ -37,6 +39,8 @@ export function AuthScaffold({
   children: ReactNode;
   footer?: ReactNode;
 }) {
+  const styles = useStyles();
+  const colors = useColors();
   const { height } = useWindowDimensions();
   return (
     <SafeAreaView style={styles.screen}>
@@ -91,6 +95,7 @@ export function AuthScaffold({
 }
 
 export function OrDivider() {
+  const styles = useStyles();
   return (
     <View
       style={styles.divider}
@@ -113,6 +118,7 @@ export function TextLink({
   onPress: () => void;
   disabled?: boolean;
 }) {
+  const styles = useStyles();
   return (
     <Pressable
       onPress={onPress}
@@ -137,6 +143,7 @@ export function FooterPrompt({
   action: string;
   onPress: () => void;
 }) {
+  const styles = useStyles();
   return (
     <View style={styles.prompt}>
       <Text style={styles.promptText}>{prompt}</Text>
@@ -152,6 +159,7 @@ export function FormMessage({
   message?: string;
   tone?: 'error' | 'info';
 }) {
+  const styles = useStyles();
   if (!message) return null;
   return (
     <Text
@@ -164,7 +172,7 @@ export function FormMessage({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: { flex: 1, backgroundColor: colors.canvas },
   flex: { flex: 1 },
   content: {
@@ -226,4 +234,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   info: { color: colors.textSecondary },
-});
+}));

@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors } from '../../../design-system/tokens/colors';
+import { Image, Pressable, Text, View } from 'react-native';
+import { makeStyles } from '../../../design-system/theme/ThemeProvider';
 import { controls } from '../../../design-system/tokens/controls';
 import { fontFamilies } from '../../../design-system/tokens/typography';
 import type { AuthUser } from '../AuthService';
 
 /** The Google photo when there is one, otherwise the user's initial. */
 export function UserAvatar({ user, size }: { user: AuthUser; size: number }) {
+  const styles = useStyles();
   const [failedUrl, setFailedUrl] = useState<string | null>(null);
   const photo = user.avatarUrl && user.avatarUrl !== failedUrl;
   const initial = (user.name || user.email).trim().charAt(0).toUpperCase();
@@ -43,6 +44,7 @@ export function ProfileButton({
   user: AuthUser;
   onPress: () => void;
 }) {
+  const styles = useStyles();
   return (
     <Pressable
       onPress={onPress}
@@ -57,7 +59,7 @@ export function ProfileButton({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   frame: {
     backgroundColor: colors.ink,
     alignItems: 'center',
@@ -66,4 +68,4 @@ const styles = StyleSheet.create({
   },
   initial: { fontFamily: fontFamilies.bold, color: colors.onAction },
   pressed: { opacity: controls.pressedOpacity },
-});
+}));

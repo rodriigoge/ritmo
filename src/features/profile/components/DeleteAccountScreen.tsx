@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../../../design-system/components/Button/Button';
 import { TopBar } from '../../../design-system/components/TopBar/TopBar';
-import { colors } from '../../../design-system/tokens/colors';
+import { makeStyles } from '../../../design-system/theme/ThemeProvider';
 import { spacing } from '../../../design-system/tokens/spacing';
 import {
   fontFamilies,
@@ -15,6 +15,7 @@ import { messageFor } from '../../auth/domain/AuthFailure';
 import { PingoArt } from '../../onboarding/illustrations/PingoArt';
 
 export function DeleteAccountScreen({ onBack }: { onBack: () => void }) {
+  const styles = useStyles();
   const { user, deleteAccount } = useAuth();
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string>();
@@ -71,7 +72,7 @@ export function DeleteAccountScreen({ onBack }: { onBack: () => void }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: { flex: 1, backgroundColor: colors.canvas },
   content: {
     flexGrow: 1,
@@ -99,4 +100,4 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     paddingTop: spacing.xxl,
   },
-});
+}));

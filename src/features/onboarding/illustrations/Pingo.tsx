@@ -1,5 +1,6 @@
 import { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
-import { colors } from '../../../design-system/tokens/colors';
+import { useColors } from '../../../design-system/theme/ThemeProvider';
+import { useArtColors } from './useArtColors';
 
 // Pingo is Ritmo's mascot: the round "o" of the logo wearing headphones,
 // with a curl on top that echoes the logo's "r". Drawn around its body
@@ -45,18 +46,11 @@ const POSES: Record<PingoPose, PoseSpec> = {
   },
 };
 
-const INK = colors.ink;
-const PAPER = colors.canvas;
-const line = {
-  stroke: INK,
-  fill: 'none',
-  strokeLinecap: 'round',
-  strokeLinejoin: 'round',
-} as const;
 
 export type PingoProps = { x: number; y: number; pose: PingoPose };
 
 export function Pingo({ x, y, pose }: PingoProps) {
+  const { INK, PAPER, line } = useArtColors();
   const spec = POSES[pose];
   return (
     <G transform={`translate(${x} ${y})`}>
@@ -82,6 +76,7 @@ export function Pingo({ x, y, pose }: PingoProps) {
 }
 
 function Head() {
+  const { INK, PAPER, line } = useArtColors();
   return (
     <>
       <Path
@@ -120,6 +115,7 @@ function Head() {
 }
 
 function SmilingFace({ look }: { look: number }) {
+  const { INK, PAPER, line } = useArtColors();
   return (
     <>
       <Ellipse cx={-20 + look} cy={-6} rx={8} ry={11} fill={INK} />
@@ -132,6 +128,8 @@ function SmilingFace({ look }: { look: number }) {
 }
 
 function JoyfulFace() {
+  const { INK, line } = useArtColors();
+  const colors = useColors();
   return (
     <>
       <Path
@@ -155,6 +153,7 @@ function JoyfulFace() {
 }
 
 function StandingLegs() {
+  const { INK, line } = useArtColors();
   return (
     <>
       <Path d="M-18 58 L-20 80 M18 58 L20 80" {...line} strokeWidth={6} />
@@ -165,6 +164,7 @@ function StandingLegs() {
 }
 
 function JumpingLegs() {
+  const { INK, line } = useArtColors();
   return (
     <>
       <Path

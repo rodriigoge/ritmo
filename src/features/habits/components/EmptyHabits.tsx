@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
-import { colors } from '../../../design-system/tokens/colors';
+import { makeStyles, useColors } from '../../../design-system/theme/ThemeProvider';
 import { spacing } from '../../../design-system/tokens/spacing';
 import {
   fontFamilies,
@@ -10,6 +10,7 @@ import { PingoArt } from '../../onboarding/illustrations/PingoArt';
 
 /** First-run state of the home: Pingo invites the user to start small. */
 export function EmptyHabits() {
+  const styles = useStyles();
   return (
     <View style={styles.container}>
       <View
@@ -35,6 +36,8 @@ export function EmptyHabits() {
 /** Hand-drawn arrow from the empty state down to the floating + button.
  * Place it absolutely, just above and left of that button. */
 export function CreateHabitHint() {
+  const styles = useStyles();
+  const colors = useColors();
   return (
     <View
       pointerEvents="none"
@@ -65,7 +68,7 @@ export function CreateHabitHint() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: {
     alignItems: 'center',
     paddingTop: spacing.lg,
@@ -124,4 +127,4 @@ const styles = StyleSheet.create({
     marginRight: spacing.xs,
     transform: [{ rotate: '-6deg' }],
   },
-});
+}));

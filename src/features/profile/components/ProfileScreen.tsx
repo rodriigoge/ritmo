@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../../../design-system/components/Button/Button';
 import {
   PencilIcon,
   SignOutIcon,
+  ThemeIcon,
   TrashIcon,
 } from '../../../design-system/components/Icon/Icons';
 import {
@@ -12,7 +13,12 @@ import {
   OptionRow,
 } from '../../../design-system/components/OptionList/OptionList';
 import { TopBar } from '../../../design-system/components/TopBar/TopBar';
-import { colors } from '../../../design-system/tokens/colors';
+import {
+  makeStyles,
+  useColors,
+  useTheme,
+} from '../../../design-system/theme/ThemeProvider';
+import { THEME_LABELS } from './ThemeScreen';
 import { spacing } from '../../../design-system/tokens/spacing';
 import {
   fontFamilies,
@@ -27,11 +33,16 @@ export function ProfileScreen({
   onBack,
   onEditProfile,
   onDeleteAccount,
+  onTheme,
 }: {
   onBack: () => void;
   onEditProfile: () => void;
+  onTheme: () => void;
   onDeleteAccount: () => void;
 }) {
+  const styles = useStyles();
+  const colors = useColors();
+  const { preference } = useTheme();
   const { user, signOut } = useAuth();
   const [signingOut, setSigningOut] = useState(false);
   const [error, setError] = useState<string>();
@@ -66,6 +77,12 @@ export function ProfileScreen({
             onPress={onEditProfile}
           />
           <OptionRow
+            label="Temas"
+            value={THEME_LABELS[preference]}
+            icon={<ThemeIcon size={20} />}
+            onPress={onTheme}
+          />
+          <OptionRow
             label="Excluir conta"
             tone="danger"
             icon={<TrashIcon size={20} color={colors.danger} />}
@@ -89,7 +106,7 @@ export function ProfileScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: { flex: 1, backgroundColor: colors.canvas },
   content: {
     flexGrow: 1,
@@ -121,4 +138,4 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     paddingTop: spacing.xxl,
   },
-});
+}));

@@ -1,6 +1,6 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { ArrowRightIcon } from '../../../design-system/components/Icon/Icons';
-import { colors } from '../../../design-system/tokens/colors';
+import { makeStyles } from '../../../design-system/theme/ThemeProvider';
 import { controls } from '../../../design-system/tokens/controls';
 import { spacing } from '../../../design-system/tokens/spacing';
 import { typography } from '../../../design-system/tokens/typography';
@@ -27,6 +27,7 @@ export function HabitCard({
   error?: string;
   recordId?: number;
 }) {
+  const styles = useStyles();
   const metrics = useHabitMetrics(habit.completedDates, today);
   const days = useRecentActivity(habit.completedDates, habit.createdAt, today);
   return (
@@ -90,7 +91,7 @@ export function HabitCard({
     </View>
   );
 }
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: {
     backgroundColor: colors.habitCard,
     borderWidth: 1,
@@ -130,4 +131,4 @@ const styles = StyleSheet.create({
   },
   pressed: { opacity: controls.pressedOpacity },
   error: { ...typography.caption, color: colors.danger },
-});
+}));

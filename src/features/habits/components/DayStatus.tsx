@@ -3,14 +3,16 @@ import {
   Animated,
   Easing,
   Pressable,
-  StyleSheet,
   Text,
   View,
   useAnimatedValue,
 } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
-import { colors } from '../../../design-system/tokens/colors';
+import {
+  makeStyles,
+  useColors,
+} from '../../../design-system/theme/ThemeProvider';
 import { controls } from '../../../design-system/tokens/controls';
 import { radius } from '../../../design-system/tokens/radius';
 import { spacing } from '../../../design-system/tokens/spacing';
@@ -51,6 +53,8 @@ export function DayStatus({
   recordId,
   onPress,
 }: DayStatusProps) {
+  const styles = useStyles();
+  const colors = useColors();
   const press = useAnimatedValue(1);
   const pop = useAnimatedValue(1);
   const draw = useAnimatedValue(completed ? 1 : 0);
@@ -219,7 +223,7 @@ export function DayStatus({
     </Pressable>
   );
 }
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: {
     flex: 1,
     minWidth: 0,
@@ -277,4 +281,4 @@ const styles = StyleSheet.create({
     borderStyle: 'dashed',
     borderColor: colors.textSecondary,
   },
-});
+}));

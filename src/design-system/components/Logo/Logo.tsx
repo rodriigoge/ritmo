@@ -1,5 +1,5 @@
 import Svg, { Circle, G, Path } from 'react-native-svg';
-import { colors } from '../../tokens/colors';
+import { useColors } from '../../theme/ThemeProvider';
 
 // Vector port of assets/img/ritmo-logo.svg, cropped to the wordmark bounds.
 const VIEW_BOX = { x: 32, y: 26, width: 580, height: 156 };
@@ -7,6 +7,7 @@ const VIEW_BOX = { x: 32, y: 26, width: 580, height: 156 };
 export type LogoProps = { height?: number };
 
 export function Logo({ height = 24 }: LogoProps) {
+  const colors = useColors();
   const width = (height * VIEW_BOX.width) / VIEW_BOX.height;
   return (
     <Svg

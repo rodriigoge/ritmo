@@ -1,10 +1,10 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { HabitFormSheet } from '../../src/features/habits/components/HabitFormSheet';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { IconButton } from '../../src/design-system/components/IconButton/IconButton';
-import { colors } from '../../src/design-system/tokens/colors';
+import { makeStyles } from '../../src/design-system/theme/ThemeProvider';
 import { controls } from '../../src/design-system/tokens/controls';
 import { radius } from '../../src/design-system/tokens/radius';
 import { spacing } from '../../src/design-system/tokens/spacing';
@@ -25,6 +25,7 @@ import {
 } from '../../src/features/habits/components/EmptyHabits';
 
 export default function Home() {
+  const styles = useStyles();
   const router = useRouter();
   const {
     habits,
@@ -154,6 +155,7 @@ export default function Home() {
   );
 }
 function TodayProgress({ done, total }: { done: number; total: number }) {
+  const styles = useStyles();
   const label =
     done === total
       ? 'Tudo feito hoje. Bom ritmo!'
@@ -179,9 +181,10 @@ function TodayProgress({ done, total }: { done: number; total: number }) {
   );
 }
 function HabitSpacing() {
+  const styles = useStyles();
   return <View style={styles.habitSpacing} />;
 }
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: { flex: 1, backgroundColor: colors.canvas },
   body: { flex: 1 },
   habitSpacing: { height: spacing.md },
@@ -245,4 +248,4 @@ const styles = StyleSheet.create({
     height: controls.floatingIconSize,
     borderRadius: controls.floatingIconStrokeWidth / 2,
   },
-});
+}));

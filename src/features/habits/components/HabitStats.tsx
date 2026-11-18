@@ -1,13 +1,12 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import {
   Animated,
-  StyleSheet,
   Text,
   View,
   useAnimatedValue,
 } from 'react-native';
 import { FlameIcon } from '../../../design-system/components/Icon/Icons';
-import { colors } from '../../../design-system/tokens/colors';
+import { makeStyles, useColors } from '../../../design-system/theme/ThemeProvider';
 import { spacing } from '../../../design-system/tokens/spacing';
 import {
   fontFamilies,
@@ -58,6 +57,8 @@ export function HabitStats({
   today: LocalDate;
   recordId?: number;
 }) {
+  const styles = useStyles();
+  const colors = useColors();
   const rate = completionRate(completedDates, createdAt, today);
   const reduceMotion = useReduceMotion();
   // Each new best streak gets a fresh, growing id, which restarts the
@@ -119,6 +120,7 @@ function StatCard({
   icon?: ReactNode;
   overlay?: ReactNode;
 }) {
+  const styles = useStyles();
   const opacity = useAnimatedValue(1);
   const previous = useRef(value);
   useEffect(() => {
@@ -161,7 +163,7 @@ function StatCard({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   wrap: { gap: spacing.md },
   row: { flexDirection: 'row', gap: spacing.sm },
   card: {
@@ -192,4 +194,4 @@ const styles = StyleSheet.create({
   labelRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   label: { ...typography.caption, color: colors.textSecondary, flexShrink: 1 },
   best: { ...typography.body, color: colors.textSecondary },
-});
+}));

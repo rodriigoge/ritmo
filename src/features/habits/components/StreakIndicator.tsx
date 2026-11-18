@@ -1,13 +1,12 @@
 import { useEffect } from 'react';
 import {
-  Animated,
-  StyleSheet,
+  Animated,
   Text,
   View,
   useAnimatedValue,
 } from 'react-native';
 import { FlameIcon } from '../../../design-system/components/Icon/Icons';
-import { colors } from '../../../design-system/tokens/colors';
+import { makeStyles, useColors } from '../../../design-system/theme/ThemeProvider';
 import { spacing } from '../../../design-system/tokens/spacing';
 import {
   fontFamilies,
@@ -23,6 +22,8 @@ export function StreakIndicator({
   recordId?: number;
   inline?: boolean;
 }) {
+  const styles = useStyles();
+  const colors = useColors();
   const label = value === 1 ? 'dia seguido' : 'dias seguidos';
   const opacity = useAnimatedValue(1);
   const showRecord = recordId !== undefined;
@@ -92,7 +93,7 @@ export function StreakIndicator({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { alignItems: 'flex-end' },
   metric: { alignItems: 'flex-end' },
   inlineRow: {
@@ -110,7 +111,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
     borderRadius: 10,
     overflow: 'hidden',
-    backgroundColor: '#E7F2E5',
+    backgroundColor: colors.accentSoft,
   },
   value: {
     ...typography.metric,
@@ -128,4 +129,4 @@ const styles = StyleSheet.create({
     fontFamily: fontFamilies.bold,
     color: colors.accent,
   },
-});
+}));

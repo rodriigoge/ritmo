@@ -1,6 +1,6 @@
 import { Children, Fragment, type ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors } from '../../tokens/colors';
+import { Pressable, Text, View } from 'react-native';
+import { makeStyles, useColors } from '../../theme/ThemeProvider';
 import { controls } from '../../tokens/controls';
 import { spacing } from '../../tokens/spacing';
 import { fontFamilies, typography } from '../../tokens/typography';
@@ -8,6 +8,7 @@ import { ChevronRightIcon } from '../Icon/Icons';
 
 /** Bordered group of option rows, separated by hairlines. */
 export function OptionList({ children }: { children: ReactNode }) {
+  const styles = useStyles();
   const rows = Children.toArray(children);
   return (
     <View style={styles.card}>
@@ -27,18 +28,23 @@ export function OptionRow({
   icon,
   onPress,
   tone = 'default',
+  value,
 }: {
   label: string;
+  /** Current setting, shown before the chevron (e.g. "Escuro"). */
+  value?: string;
   icon: ReactNode;
   onPress: () => void;
   tone?: 'default' | 'danger';
 }) {
+  const styles = useStyles();
+  const colors = useColors();
   const danger = tone === 'danger';
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      accessibilityLabel={label}
+      accessibilityLabel={value ? `${label}, ${value}` : label}
       style={({ pressed }) => [styles.row, pressed && styles.pressed]}
     >
       <View
@@ -49,6 +55,7 @@ export function OptionRow({
         {icon}
       </View>
       <Text style={[styles.label, danger && styles.danger]}>{label}</Text>
+      {value ? <Text style={styles.value}>{value}</Text> : null}
       <ChevronRightIcon
         size={18}
         color={danger ? colors.danger : colors.textMuted}
@@ -57,7 +64,7 @@ export function OptionRow({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     borderWidth: 1,
     borderColor: colors.cardBorder,
@@ -79,7 +86,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  dangerChip: { backgroundColor: '#FBEDEC' },
+  dangerChip: { backgroundColor: colors.dangerSoft },
   label: {
     flex: 1,
     ...typography.body,
@@ -87,6 +94,7 @@ const styles = StyleSheet.create({
     color: colors.ink,
   },
   danger: { color: colors.danger },
+  value: { ...typography.body, color: colors.textSecondary },
   rule: { height: 1, backgroundColor: colors.cardBorder, marginLeft: 52 },
   pressed: { opacity: controls.pressedOpacity },
-});
+}));

@@ -1,6 +1,7 @@
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
-import { colors } from '../../../design-system/tokens/colors';
+import { useColors } from '../../../design-system/theme/ThemeProvider';
 import { Pingo } from '../../onboarding/illustrations/Pingo';
+import { useArtColors } from '../../onboarding/illustrations/useArtColors';
 
 export type AuthScene = 'hello' | 'mail';
 
@@ -8,14 +9,6 @@ const VIEW_BOXES: Record<AuthScene, { width: number; height: number }> = {
   hello: { width: 250, height: 216 },
   mail: { width: 310, height: 216 },
 };
-
-const INK = colors.ink;
-const line = {
-  stroke: INK,
-  fill: 'none',
-  strokeLinecap: 'round',
-  strokeLinejoin: 'round',
-} as const;
 
 export function AuthIllustration({
   scene,
@@ -39,6 +32,8 @@ export function AuthIllustration({
 }
 
 function HelloScene() {
+  const { INK, line } = useArtColors();
+  const colors = useColors();
   return (
     <>
       <Sparkle x={40} y={44} size={12} />
@@ -57,6 +52,8 @@ function HelloScene() {
 }
 
 function MailScene() {
+  const { INK, line } = useArtColors();
+  const colors = useColors();
   return (
     <>
       <Sparkle x={36} y={40} size={10} />
@@ -92,6 +89,7 @@ function MailScene() {
 }
 
 function Sparkle({ x, y, size }: { x: number; y: number; size: number }) {
+  const { INK } = useArtColors();
   return (
     <Path
       d={`M${x} ${y - size} Q${x} ${y} ${x + size} ${y} Q${x} ${y} ${x} ${y + size} Q${x} ${y} ${x - size} ${y} Q${x} ${y} ${x} ${y - size} Z`}
@@ -101,6 +99,7 @@ function Sparkle({ x, y, size }: { x: number; y: number; size: number }) {
 }
 
 function Ground({ x, y }: { x: number; y: number }) {
+  const { line } = useArtColors();
   return (
     <Path d={`M${x} ${y} q23 -8 46 0 t46 0 t46 0`} {...line} strokeWidth={4} />
   );

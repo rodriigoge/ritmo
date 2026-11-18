@@ -8,6 +8,7 @@ export default function ProfileRoute() {
       onBack={() => router.back()}
       onEditProfile={() => router.push('/profile/edit')}
       onDeleteAccount={() => router.push('/profile/delete')}
+      onTheme={() => router.push('/profile/theme')}
     />
   );
 }

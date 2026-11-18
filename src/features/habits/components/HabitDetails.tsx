@@ -3,7 +3,7 @@ import { HabitFormSheet } from './HabitFormSheet';
 import { HabitCalendar } from './HabitCalendar';
 import { HabitOptionsModal } from './HabitOptionsModal';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../../../design-system/components/Button/Button';
 import { MoreIcon } from '../../../design-system/components/Icon/Icons';
@@ -11,7 +11,7 @@ import {
   TOP_BAR_CHIP,
   TopBar,
 } from '../../../design-system/components/TopBar/TopBar';
-import { colors } from '../../../design-system/tokens/colors';
+import { makeStyles } from '../../../design-system/theme/ThemeProvider';
 import { controls } from '../../../design-system/tokens/controls';
 import { spacing } from '../../../design-system/tokens/spacing';
 import {
@@ -32,6 +32,7 @@ export function HabitDetails({
   id: string;
   onBack: () => void;
 }) {
+  const styles = useStyles();
   const { habits, today, loading, error, refresh } = useHabits();
   const habit = habits.find((item) => item.id === id);
   return (
@@ -65,6 +66,7 @@ function DetailsContent({
   today: LocalDate;
   onBack: () => void;
 }) {
+  const styles = useStyles();
   const {
     toggleDay,
     completionError,
@@ -176,7 +178,7 @@ function DetailsContent({
     </>
   );
 }
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: { flex: 1, backgroundColor: colors.canvas },
   content: {
     paddingHorizontal: spacing.lg,
@@ -207,4 +209,4 @@ const styles = StyleSheet.create({
   pressed: { opacity: controls.pressedOpacity },
   body: { ...typography.body, color: colors.textSecondary },
   error: { ...typography.caption, color: colors.danger },
-});
+}));

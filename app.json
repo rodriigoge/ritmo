@@ -5,10 +5,8 @@
     "version": "0.0.2",
     "scheme": "ritmo",
     "icon": "./assets/icon/icon.png",
-    "platforms": [
-      "android",
-      "ios"
-    ],
+    "userInterfaceStyle": "automatic",
+    "platforms": ["android", "ios"],
     "plugins": [
       "expo-router",
       "expo-sqlite",

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, View, type PressableProps } from 'react-native';
-import { colors } from '../../tokens/colors';
+import { Pressable, View, type PressableProps } from 'react-native';
+import { makeStyles, useColors } from '../../theme/ThemeProvider';
 import { controls } from '../../tokens/controls';
 import { radius } from '../../tokens/radius';
 
@@ -25,6 +25,8 @@ export function IconButton({
   iconSize,
   ...props
 }: IconButtonProps) {
+  const styles = useStyles();
+  const colors = useColors();
   return (
     <Pressable
       {...props}
@@ -60,7 +62,7 @@ export function IconButton({
     </Pressable>
   );
 }
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   base: {
     minHeight: controls.minTouchTarget,
     minWidth: controls.minTouchTarget,
@@ -76,4 +78,4 @@ const styles = StyleSheet.create({
   alignStart: { alignItems: 'flex-start' },
   alignEnd: { alignItems: 'flex-end' },
   disabled: { opacity: controls.disabledOpacity },
-});
+}));

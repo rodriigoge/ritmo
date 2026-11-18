@@ -1,5 +1,5 @@
 import Svg, { Circle, Path } from 'react-native-svg';
-import { colors } from '../../tokens/colors';
+import { useColors } from '../../theme/ThemeProvider';
 
 // Small line icons in the same ink stroke as the illustrations. They are
 // decorative: the control that holds one always carries its own label.
@@ -9,9 +9,10 @@ type IconProps = { size?: number; color?: string };
 function Line({
   d,
   size = 20,
-  color = colors.ink,
+  color,
   strokeWidth = 2.2,
 }: IconProps & { d: string; strokeWidth?: number }) {
+  const colors = useColors();
   return (
     <Svg
       width={size}
@@ -22,7 +23,7 @@ function Line({
     >
       <Path
         d={d}
-        stroke={color}
+        stroke={color ?? colors.ink}
         strokeWidth={strokeWidth}
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -83,7 +84,9 @@ export function SignOutIcon(props: IconProps) {
   );
 }
 
-export function MoreIcon({ size = 20, color = colors.ink }: IconProps) {
+export function MoreIcon({ size = 20, color }: IconProps) {
+  const colors = useColors();
+  const fill = color ?? colors.ink;
   return (
     <Svg
       width={size}
@@ -92,9 +95,34 @@ export function MoreIcon({ size = 20, color = colors.ink }: IconProps) {
       accessible={false}
       importantForAccessibility="no-hide-descendants"
     >
-      <Circle cx={5} cy={12} r={2} fill={color} />
-      <Circle cx={12} cy={12} r={2} fill={color} />
-      <Circle cx={19} cy={12} r={2} fill={color} />
+      <Circle cx={5} cy={12} r={2} fill={fill} />
+      <Circle cx={12} cy={12} r={2} fill={fill} />
+      <Circle cx={19} cy={12} r={2} fill={fill} />
+    </Svg>
+  );
+}
+
+/** Half-filled circle: light and dark. */
+export function ThemeIcon({ size = 20, color }: IconProps) {
+  const colors = useColors();
+  const ink = color ?? colors.ink;
+  return (
+    <Svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      accessible={false}
+      importantForAccessibility="no-hide-descendants"
+    >
+      <Circle
+        cx={12}
+        cy={12}
+        r={8.5}
+        stroke={ink}
+        strokeWidth={2.2}
+        fill="none"
+      />
+      <Path d="M12 3.5 A8.5 8.5 0 0 1 12 20.5 Z" fill={ink} />
     </Svg>
   );
 }

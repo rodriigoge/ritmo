@@ -3,7 +3,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -11,7 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../../../design-system/components/Button/Button';
 import { TextField } from '../../../design-system/components/TextField/TextField';
 import { TopBar } from '../../../design-system/components/TopBar/TopBar';
-import { colors } from '../../../design-system/tokens/colors';
+import { makeStyles } from '../../../design-system/theme/ThemeProvider';
 import { spacing } from '../../../design-system/tokens/spacing';
 import { typography } from '../../../design-system/tokens/typography';
 import { useAuth } from '../../auth/AuthProvider';
@@ -27,6 +26,7 @@ export function EditProfileScreen({
   onBack: () => void;
   onSaved: () => void;
 }) {
+  const styles = useStyles();
   const { user, updateProfile } = useAuth();
   const [name, setName] = useState(user?.name ?? '');
   const [nameError, setNameError] = useState<string>();
@@ -108,7 +108,7 @@ export function EditProfileScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: { flex: 1, backgroundColor: colors.canvas },
   flex: { flex: 1 },
   content: {
@@ -131,4 +131,4 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     paddingTop: spacing.xxl,
   },
-});
+}));

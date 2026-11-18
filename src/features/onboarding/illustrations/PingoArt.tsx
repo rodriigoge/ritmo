@@ -1,8 +1,8 @@
 import Svg, { Circle, Path } from 'react-native-svg';
-import { colors } from '../../../design-system/tokens/colors';
+import { useColors } from '../../../design-system/theme/ThemeProvider';
 import { Pingo, type PingoPose } from './Pingo';
+import { useArtColors } from './useArtColors';
 
-const INK = colors.ink;
 
 /** Pingo on his own, with a couple of sparkles, sized by height. */
 export function PingoArt({
@@ -12,6 +12,8 @@ export function PingoArt({
   pose: PingoPose;
   height: number;
 }) {
+  const { INK } = useArtColors();
+  const colors = useColors();
   const width = 240;
   const viewHeight = 220;
   return (
@@ -39,6 +41,7 @@ export function PingoArt({
 }
 
 function Sparkle({ x, y, size }: { x: number; y: number; size: number }) {
+  const { INK } = useArtColors();
   return (
     <Path
       d={`M${x} ${y - size} Q${x} ${y} ${x + size} ${y} Q${x} ${y} ${x} ${y + size} Q${x} ${y} ${x - size} ${y} Q${x} ${y} ${x} ${y - size} Z`}

@@ -1,7 +1,8 @@
 import { StyleSheet, View } from 'react-native';
-import { colors } from '../../tokens/colors';
+import { makeStyles } from '../../theme/ThemeProvider';
 
 export function Divider() {
+  const styles = useStyles();
   return (
     <View
       accessible={false}
@@ -11,10 +12,10 @@ export function Divider() {
     />
   );
 }
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   line: {
     height: StyleSheet.hairlineWidth,
     backgroundColor: colors.border,
     alignSelf: 'stretch',
   },
-});
+}));

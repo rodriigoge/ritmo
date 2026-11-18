@@ -3,7 +3,6 @@ import {
   AccessibilityInfo,
   Animated,
   Easing,
-  StyleSheet,
   Text,
   View,
   useWindowDimensions,
@@ -13,7 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../../../design-system/components/Button/Button';
 import { Logo } from '../../../design-system/components/Logo/Logo';
-import { colors } from '../../../design-system/tokens/colors';
+import { makeStyles, useColors } from '../../../design-system/theme/ThemeProvider';
 import { controls } from '../../../design-system/tokens/controls';
 import { spacing } from '../../../design-system/tokens/spacing';
 import {
@@ -37,6 +36,8 @@ export function OnboardingScreen({
   onCreateAccount: () => void;
   onSignIn: () => void;
 }) {
+  const styles = useStyles();
+  const colors = useColors();
   const { width, height } = useWindowDimensions();
   const [scrollX] = useState(() => new Animated.Value(0));
   const [index, setIndex] = useState(0);
@@ -189,7 +190,7 @@ function FloatingArt({ children }: { children: ReactNode }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: { flex: 1, backgroundColor: colors.canvas },
   header: {
     height: controls.minTouchTarget,
@@ -230,4 +231,4 @@ const styles = StyleSheet.create({
     gap: spacing.sm - 2,
   },
   dot: { height: DOT_SIZE, borderRadius: DOT_SIZE / 2 },
-});
+}));

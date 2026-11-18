@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import { Button } from '../../../design-system/components/Button/Button';
 import { TextField } from '../../../design-system/components/TextField/TextField';
-import { colors } from '../../../design-system/tokens/colors';
+import {
+  makeStyles,
+  useColors,
+} from '../../../design-system/theme/ThemeProvider';
 import { useAuth } from '../AuthProvider';
 import { messageFor } from '../domain/AuthFailure';
 import { MIN_PASSWORD_LENGTH, validatePassword } from '../domain/validation';
@@ -40,6 +43,8 @@ function useEmailLinkSession(code?: string, linkError?: string) {
 }
 
 function Verifying({ title }: { title: string }) {
+  const styles = useStyles();
+  const colors = useColors();
   return (
     <AuthScaffold scene="mail" title={title} subtitle="Só um instante…">
       <View style={styles.center}>
@@ -181,6 +186,6 @@ export function ResetPasswordScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   center: { alignItems: 'center', paddingVertical: 24 },
-});
+}));

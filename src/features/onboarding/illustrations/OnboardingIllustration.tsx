@@ -1,20 +1,12 @@
 import Svg, { Circle, G, Path, Rect } from 'react-native-svg';
-import { colors } from '../../../design-system/tokens/colors';
+import {} from '../../../design-system/theme/ThemeProvider';
 import { Pingo } from './Pingo';
+import { useArtColors } from './useArtColors';
 
 export type OnboardingScene = 'welcome' | 'track' | 'rhythm';
 
 export const ILLUSTRATION_ASPECT_RATIO = 320 / 280;
 
-const INK = colors.ink;
-const PAPER = colors.canvas;
-const BRAND = colors.brand;
-const line = {
-  stroke: INK,
-  fill: 'none',
-  strokeLinecap: 'round',
-  strokeLinejoin: 'round',
-} as const;
 
 export function OnboardingIllustration({
   scene,
@@ -39,6 +31,7 @@ export function OnboardingIllustration({
 }
 
 function WelcomeScene() {
+  const { INK, BRAND, line } = useArtColors();
   return (
     <>
       <Sparkle x={58} y={62} size={14} />
@@ -72,6 +65,7 @@ function WelcomeScene() {
 }
 
 function TrackScene() {
+  const { INK, PAPER, BRAND, line } = useArtColors();
   return (
     <>
       {/* A habit card: four days done, today waiting. */}
@@ -134,6 +128,7 @@ function TrackScene() {
 }
 
 function RhythmScene() {
+  const { INK, BRAND, line } = useArtColors();
   const streak = [60, 90, 120, 150, 180, 210];
   return (
     <>
@@ -171,6 +166,7 @@ function RhythmScene() {
 }
 
 function Sparkle({ x, y, size }: { x: number; y: number; size: number }) {
+  const { INK } = useArtColors();
   return (
     <Path
       d={`M${x} ${y - size} Q${x} ${y} ${x + size} ${y} Q${x} ${y} ${x} ${y + size} Q${x} ${y} ${x - size} ${y} Q${x} ${y} ${x} ${y - size} Z`}
@@ -180,6 +176,7 @@ function Sparkle({ x, y, size }: { x: number; y: number; size: number }) {
 }
 
 function Ground({ x, y, width }: { x: number; y: number; width: number }) {
+  const { line } = useArtColors();
   const third = width / 3;
   return (
     <Path
@@ -191,6 +188,7 @@ function Ground({ x, y, width }: { x: number; y: number; width: number }) {
 }
 
 function NoteHead({ x, y }: { x: number; y: number }) {
+  const { INK } = useArtColors();
   return (
     <Path
       d={`M${x - 7} ${y + 1} C${x - 7} ${y - 4} ${x + 1} ${y - 7} ${x + 5} ${y - 5} C${x + 9} ${y - 3} ${x + 7} ${y + 3} ${x + 1} ${y + 5} C${x - 4} ${y + 7} ${x - 7} ${y + 5} ${x - 7} ${y + 1} Z`}
@@ -200,6 +198,7 @@ function NoteHead({ x, y }: { x: number; y: number }) {
 }
 
 function Note({ x, y }: { x: number; y: number }) {
+  const { line } = useArtColors();
   return (
     <G transform={`translate(${x} ${y}) rotate(-10)`}>
       <NoteHead x={0} y={0} />
@@ -209,6 +208,7 @@ function Note({ x, y }: { x: number; y: number }) {
 }
 
 function BeamedNotes({ x, y }: { x: number; y: number }) {
+  const { line } = useArtColors();
   return (
     <G transform={`translate(${x} ${y}) rotate(8)`}>
       <NoteHead x={0} y={0} />

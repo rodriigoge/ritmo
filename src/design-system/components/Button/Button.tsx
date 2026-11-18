@@ -2,12 +2,11 @@ import type { ReactNode } from 'react';
 import {
   ActivityIndicator,
   Pressable,
-  StyleSheet,
   Text,
   View,
   type PressableProps,
 } from 'react-native';
-import { colors } from '../../tokens/colors';
+import { makeStyles, useColors } from '../../theme/ThemeProvider';
 import { controls } from '../../tokens/controls';
 import { radius } from '../../tokens/radius';
 import { spacing } from '../../tokens/spacing';
@@ -38,6 +37,8 @@ export function Button({
   icon,
   ...props
 }: ButtonProps) {
+  const styles = useStyles();
+  const colors = useColors();
   const blocked = disabled || loading;
   const darkLabel = darkLabelVariants.has(variant);
   return (
@@ -79,7 +80,7 @@ export function Button({
     </Pressable>
   );
 }
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   base: {
     minHeight: controls.minTouchTarget,
     minWidth: controls.minTouchTarget,
@@ -112,4 +113,4 @@ const styles = StyleSheet.create({
   darkLabel: { color: colors.ink },
   pressed: { opacity: controls.pressedOpacity },
   disabled: { opacity: controls.disabledOpacity },
-});
+}));

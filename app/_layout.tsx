@@ -8,6 +8,12 @@ import {
   Inter_700Bold,
 } from '@expo-google-fonts/inter';
 
+import { StatusBar } from 'expo-status-bar';
+import * as SystemUI from 'expo-system-ui';
+import {
+  ThemeProvider,
+  useTheme,
+} from '../src/design-system/theme/ThemeProvider';
 import { AuthProvider, useAuth } from '../src/features/auth/AuthProvider';
 import { supabaseAuthService } from '../src/features/auth/SupabaseAuthService';
 import {
@@ -30,11 +36,13 @@ export default function RootLayout() {
   if (!fontsLoaded) return null;
 
   return (
-    <OnboardingProvider>
-      <AuthProvider service={supabaseAuthService}>
-        <RootStack />
-      </AuthProvider>
-    </OnboardingProvider>
+    <ThemeProvider>
+      <OnboardingProvider>
+        <AuthProvider service={supabaseAuthService}>
+          <RootStack />
+        </AuthProvider>
+      </OnboardingProvider>
+    </ThemeProvider>
   );
 }
 
@@ -43,6 +51,7 @@ export default function RootLayout() {
 // the guards are email-link landings, reachable in any state.
 function RootStack() {
   const { status } = useAuth();
+  const { colors, scheme } = useTheme();
   const { completed: onboarded } = useOnboarding();
   const resolved = status !== 'loading';
 
@@ -50,24 +59,39 @@ function RootStack() {
     if (resolved) void SplashScreen.hideAsync().catch(() => {});
   }, [resolved]);
 
+  // The native root view shows behind the keyboard and during transitions.
+  useEffect(() => {
+    void SystemUI.setBackgroundColorAsync(colors.canvas).catch(() => {});
+  }, [colors.canvas]);
+
   if (!resolved) return null;
   const signedIn = status === 'signed-in';
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Protected guard={signedIn}>
-        <Stack.Screen name="(app)" options={{ animation: 'fade' }} />
-      </Stack.Protected>
-      <Stack.Protected guard={!signedIn && !onboarded}>
-        <Stack.Screen name="onboarding" options={{ animation: 'fade' }} />
-      </Stack.Protected>
-      <Stack.Protected guard={!signedIn}>
-        <Stack.Screen name="sign-in" options={{ animation: 'fade' }} />
-        <Stack.Screen name="sign-up" options={{ animation: 'fade' }} />
-        <Stack.Screen name="forgot-password" />
-      </Stack.Protected>
-      <Stack.Screen name="auth/callback" options={{ animation: 'fade' }} />
-      <Stack.Screen name="reset-password" options={{ animation: 'fade' }} />
-    </Stack>
+    <>
+      <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          // Paints behind screens during transitions, so there is no flash of
+          // the wrong color when the dark theme is on.
+          contentStyle: { backgroundColor: colors.canvas },
+        }}
+      >
+        <Stack.Protected guard={signedIn}>
+          <Stack.Screen name="(app)" options={{ animation: 'fade' }} />
+        </Stack.Protected>
+        <Stack.Protected guard={!signedIn && !onboarded}>
+          <Stack.Screen name="onboarding" options={{ animation: 'fade' }} />
+        </Stack.Protected>
+        <Stack.Protected guard={!signedIn}>
+          <Stack.Screen name="sign-in" options={{ animation: 'fade' }} />
+          <Stack.Screen name="sign-up" options={{ animation: 'fade' }} />
+          <Stack.Screen name="forgot-password" />
+        </Stack.Protected>
+        <Stack.Screen name="auth/callback" options={{ animation: 'fade' }} />
+        <Stack.Screen name="reset-password" options={{ animation: 'fade' }} />
+      </Stack>
+    </>
   );
 }

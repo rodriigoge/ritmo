@@ -1,12 +1,6 @@
 import { forwardRef, useState } from 'react';
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  type TextInputProps,
-} from 'react-native';
-import { colors } from '../../tokens/colors';
+import { Text, TextInput, View, type TextInputProps } from 'react-native';
+import { makeStyles, useColors } from '../../theme/ThemeProvider';
 import { controls } from '../../tokens/controls';
 import { radius } from '../../tokens/radius';
 import { spacing } from '../../tokens/spacing';
@@ -56,6 +50,8 @@ export const TextField = forwardRef<TextInput, TextFieldProps>(
     },
     ref,
   ) {
+    const styles = useStyles();
+    const colors = useColors();
     const [focused, setFocused] = useState(false);
     const hint =
       [accessibilityHint, error].filter(Boolean).join('. ') || undefined;
@@ -102,7 +98,7 @@ export const TextField = forwardRef<TextInput, TextFieldProps>(
     );
   },
 );
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { gap: spacing.sm },
   label: { ...typography.label, color: colors.textSecondary },
   input: {
@@ -128,4 +124,4 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     opacity: controls.disabledOpacity,
   },
-});
+}));
