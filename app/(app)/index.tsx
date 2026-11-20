@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { HabitFormSheet } from '../../src/features/habits/components/HabitFormSheet';
-import { FlatList, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { IconButton } from '../../src/design-system/components/IconButton/IconButton';
 import { makeStyles } from '../../src/design-system/theme/ThemeProvider';
@@ -13,6 +13,10 @@ import {
   typography,
 } from '../../src/design-system/tokens/typography';
 import { HabitCard } from '../../src/features/habits/components/HabitCard';
+import { useHomeLayout } from '../../src/features/habits/homeLayout/HomeLayoutProvider';
+import { HabitListSkeleton } from '../../src/features/habits/components/HabitListSkeleton';
+import { HabitDragHandle } from '../../src/features/habits/components/HabitDragHandle';
+import { ReorderableList } from '../../src/design-system/components/ReorderableList/ReorderableList';
 import { useHabits } from '../../src/features/habits/hooks/useHabits';
 import { Button } from '../../src/design-system/components/Button/Button';
 import { formatLocalDate } from '../../src/shared/date/dateUtils';
@@ -37,12 +41,12 @@ export default function Home() {
     toggleDay,
     completionError,
     recordFeedback,
+    moveHabit,
+    orderError,
   } = useHabits();
   const { user } = useAuth();
+  const { layout } = useHomeLayout();
   const [creating, setCreating] = useState(false);
-  const doneToday = habits.filter((habit) =>
-    habit.completedDates.includes(today),
-  ).length;
   const firstName = user?.name.trim().split(/\s+/)[0];
   return (
     <SafeAreaView style={styles.screen}>
@@ -51,11 +55,25 @@ export default function Home() {
         accessibilityElementsHidden={creating}
         importantForAccessibility={creating ? 'no-hide-descendants' : 'auto'}
       >
-        <FlatList
+        <ReorderableList
           data={habits}
           keyExtractor={(habit) => habit.id}
-          renderItem={({ item }) => (
+          onMove={moveHabit}
+          gap={spacing.md}
+          renderItem={({ item, index, dragHandleProps }) => (
             <HabitCard
+              variant={layout}
+              dragHandle={
+                habits.length > 1 ? (
+                  <HabitDragHandle
+                    name={item.name}
+                    index={index}
+                    count={habits.length}
+                    dragHandleProps={dragHandleProps}
+                    onMove={moveHabit}
+                  />
+                ) : undefined
+              }
               onPress={() =>
                 router.push({
                   pathname: '/habit/[id]',
@@ -77,10 +95,15 @@ export default function Home() {
               }
             />
           )}
-          ItemSeparatorComponent={HabitSpacing}
           contentContainerStyle={styles.content}
-          ListEmptyComponent={!loading && !error ? <EmptyHabits /> : null}
-          ListHeaderComponent={
+          empty={
+            loading ? (
+              <HabitListSkeleton layout={layout} />
+            ) : !error ? (
+              <EmptyHabits />
+            ) : null
+          }
+          header={
             <View style={styles.header}>
               <TopBar
                 align="start"
@@ -102,12 +125,9 @@ export default function Home() {
                   {formatLocalDate(today, { day: 'numeric', month: 'long' })}
                 </Text>
               </View>
-              {habits.length > 0 && (
-                <TodayProgress done={doneToday} total={habits.length} />
-              )}
-              {loading && (
-                <Text style={styles.date} accessibilityLiveRegion="polite">
-                  Carregando hábitos…
+              {orderError && (
+                <Text accessibilityRole="alert" style={styles.orderError}>
+                  {orderError}
                 </Text>
               )}
               {error && (
@@ -154,40 +174,9 @@ export default function Home() {
     </SafeAreaView>
   );
 }
-function TodayProgress({ done, total }: { done: number; total: number }) {
-  const styles = useStyles();
-  const label =
-    done === total
-      ? 'Tudo feito hoje. Bom ritmo!'
-      : `${done} de ${total} ${total === 1 ? 'hábito feito' : 'hábitos feitos'} hoje`;
-  return (
-    <View
-      style={styles.progress}
-      accessible
-      accessibilityRole="progressbar"
-      accessibilityLabel={label}
-      accessibilityValue={{ min: 0, max: total, now: done }}
-    >
-      <Text style={styles.progressLabel}>{label}</Text>
-      <View style={styles.progressTrack}>
-        <View
-          style={[
-            styles.progressFill,
-            { width: `${Math.round((done / total) * 100)}%` },
-          ]}
-        />
-      </View>
-    </View>
-  );
-}
-function HabitSpacing() {
-  const styles = useStyles();
-  return <View style={styles.habitSpacing} />;
-}
 const useStyles = makeStyles((colors) => ({
   screen: { flex: 1, backgroundColor: colors.canvas },
   body: { flex: 1 },
-  habitSpacing: { height: spacing.md },
   content: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xxxl * 2 },
   header: {
     paddingTop: spacing.sm,
@@ -202,25 +191,7 @@ const useStyles = makeStyles((colors) => ({
     letterSpacing: -0.4,
   },
   date: { ...typography.body, color: colors.textSecondary },
-  progress: {
-    borderWidth: 1,
-    borderColor: colors.cardBorder,
-    borderRadius: 20,
-    padding: spacing.lg,
-    gap: spacing.md,
-  },
-  progressLabel: {
-    ...typography.body,
-    fontFamily: fontFamilies.semibold,
-    color: colors.ink,
-  },
-  progressTrack: {
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: colors.chip,
-    overflow: 'hidden',
-  },
-  progressFill: { height: 8, borderRadius: 4, backgroundColor: colors.ink },
+  orderError: { ...typography.body, color: colors.danger },
   // Ends just above the left half of the floating button.
   hint: {
     position: 'absolute',

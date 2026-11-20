@@ -87,10 +87,12 @@ describe('Home with persisted data', () => {
           }),
       );
     await render(<Home />);
-    expect(screen.getByText('Carregando hábitos…')).toBeOnTheScreen();
+    expect(
+      screen.getByRole('progressbar', { name: 'Carregando hábitos…' }),
+    ).toBeOnTheScreen();
     expect(screen.queryByText('Nenhum hábito ainda')).toBeNull();
     await act(async () => resolve([]));
-    expect(screen.queryByText('Carregando hábitos…')).toBeNull();
+    expect(screen.queryByRole('progressbar')).toBeNull();
     expect(screen.queryAllByRole('checkbox')).toHaveLength(0);
   });
 

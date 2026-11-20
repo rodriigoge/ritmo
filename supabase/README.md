@@ -21,6 +21,9 @@ Abra **SQL Editor → New query** e rode, em ordem, cada arquivo de
 2. `20261117130000_delete_own_account.sql`: função `delete_own_account`, usada
    em **Perfil → Excluir conta**. Ela apaga só a conta de quem chama e, em
    cascata, os hábitos dessa conta.
+3. `20261120120000_habit_positions.sql`: coluna `position` e a função
+   `reorder_habits`, que guardam a ordem dos hábitos definida na Home.
+   Os hábitos que já existem mantêm a ordem de criação.
 
 Com a [Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started),
 o equivalente é `npx supabase link --project-ref <id>` e depois `npx supabase db push`.

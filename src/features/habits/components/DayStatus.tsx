@@ -37,6 +37,9 @@ type DayStatusProps = {
   completed: boolean;
   habitName: string;
   compact?: boolean;
+  /** Shorter Home row: weekday and day on one line above the mark. The
+   * whole column stays the touch target, at least 52 tall. */
+  dense?: boolean;
   disabled?: boolean;
   /** Changes when this completion set a new streak record. */
   recordId?: number;
@@ -49,6 +52,7 @@ export function DayStatus({
   completed,
   habitName,
   compact = false,
+  dense = false,
   disabled = false,
   recordId,
   onPress,
@@ -144,6 +148,7 @@ export function DayStatus({
       style={[
         styles.container,
         compact && styles.compactContainer,
+        dense && styles.denseContainer,
         disabled && styles.disabled,
       ]}
     >
@@ -174,12 +179,23 @@ export function DayStatus({
         </View>
       ) : (
         <>
-          <Text style={styles.weekday}>
-            {formatLocalDate(date, { weekday: 'short' })}
-          </Text>
-          <Text style={[styles.day, isToday && styles.todayLabel]}>
-            {formatLocalDate(date, { day: '2-digit' })}
-          </Text>
+          {dense ? (
+            <Text numberOfLines={1} style={styles.denseLabel}>
+              {formatLocalDate(date, { weekday: 'short' }).replace('.', '')}{' '}
+              <Text style={[styles.denseDay, isToday && styles.todayLabel]}>
+                {formatLocalDate(date, { day: '2-digit' })}
+              </Text>
+            </Text>
+          ) : (
+            <>
+              <Text style={styles.weekday}>
+                {formatLocalDate(date, { weekday: 'short' })}
+              </Text>
+              <Text style={[styles.day, isToday && styles.todayLabel]}>
+                {formatLocalDate(date, { day: '2-digit' })}
+              </Text>
+            </>
+          )}
           <View>
             <Animated.View style={{ transform: [{ scale: press }] }}>
               <Animated.View
@@ -233,6 +249,9 @@ const useStyles = makeStyles((colors) => ({
     gap: spacing.xs,
   },
   compactContainer: { paddingVertical: 3, minHeight: CELL_SIZE + 6 },
+  denseContainer: { paddingVertical: 6, gap: 6 },
+  denseLabel: { ...typography.caption, color: colors.textSecondary },
+  denseDay: { color: colors.textPrimary },
   disabled: { opacity: controls.disabledOpacity },
   weekday: { ...typography.caption, color: colors.textSecondary },
   day: {

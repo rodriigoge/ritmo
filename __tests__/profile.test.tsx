@@ -64,18 +64,6 @@ describe('Home header', () => {
       await screen.findByRole('header', { name: 'Nenhum hábito ainda' }),
     ).toBeOnTheScreen();
     expect(screen.getByText(/Comece com algo pequeno/)).toBeOnTheScreen();
-    expect(screen.queryByRole('progressbar')).toBeNull();
-  });
-
-  it('summarizes how many habits were done today', async () => {
-    const repository = new InMemoryHabitRepository();
-    const water = await repository.create({ name: 'Beber água' });
-    await repository.create({ name: 'Ler' });
-    await repository.toggleCompletion(water.id, '2026-11-17');
-    await renderHome(repository);
-    expect(
-      await screen.findByLabelText('1 de 2 hábitos feitos hoje'),
-    ).toBeOnTheScreen();
   });
 });
 
@@ -90,6 +78,7 @@ describe('Profile', () => {
           onEditProfile={onEditProfile}
           onDeleteAccount={onDeleteAccount}
           onTheme={jest.fn()}
+          onHomeLayout={jest.fn()}
           onNotifications={jest.fn()}
           onExport={jest.fn()}
           onImport={jest.fn()}
@@ -122,6 +111,7 @@ describe('Profile', () => {
           onEditProfile={jest.fn()}
           onDeleteAccount={jest.fn()}
           onTheme={jest.fn()}
+          onHomeLayout={jest.fn()}
           onNotifications={jest.fn()}
           onExport={jest.fn()}
           onImport={jest.fn()}

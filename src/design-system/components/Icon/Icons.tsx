@@ -153,3 +153,45 @@ export function BellIcon(props: IconProps) {
     />
   );
 }
+
+/** Two columns of dots: "hold here to drag". */
+export function GripVerticalIcon({ size = 20, color }: IconProps) {
+  const colors = useColors();
+  const fill = color ?? colors.textMuted;
+  return (
+    <Svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      accessible={false}
+      importantForAccessibility="no-hide-descendants"
+    >
+      {[5, 12, 19].map((cy) => (
+        <Circle key={`l${cy}`} cx={9} cy={cy} r={1.8} fill={fill} />
+      ))}
+      {[5, 12, 19].map((cy) => (
+        <Circle key={`r${cy}`} cx={15} cy={cy} r={1.8} fill={fill} />
+      ))}
+    </Svg>
+  );
+}
+
+/** Circle with a check: completed days. */
+export function CheckCircleIcon(props: IconProps) {
+  return (
+    <Line
+      d="M12 3.5 A8.5 8.5 0 1 1 11.99 3.5 Z M8.2 12.3 L10.8 14.9 L15.9 9.6"
+      {...props}
+    />
+  );
+}
+
+/** Stacked cards: Home layout. */
+export function LayoutIcon(props: IconProps) {
+  return (
+    <Line
+      d="M5 4.5 H19 A1.5 1.5 0 0 1 20.5 6 V10 A1.5 1.5 0 0 1 19 11.5 H5 A1.5 1.5 0 0 1 3.5 10 V6 A1.5 1.5 0 0 1 5 4.5 Z M5 14.5 H19 A1.5 1.5 0 0 1 20.5 16 V18 A1.5 1.5 0 0 1 19 19.5 H5 A1.5 1.5 0 0 1 3.5 18 V16 A1.5 1.5 0 0 1 5 14.5 Z"
+      {...props}
+    />
+  );
+}

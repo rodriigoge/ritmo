@@ -12,6 +12,7 @@ export default function ProfileRoute() {
         onEditProfile={() => router.push('/profile/edit')}
         onDeleteAccount={() => router.push('/profile/delete')}
         onTheme={() => router.push('/profile/theme')}
+        onHomeLayout={() => router.push('/profile/home-layout')}
         onNotifications={() => router.push('/profile/notifications')}
         onExport={transfer.startExport}
         onImport={() => {

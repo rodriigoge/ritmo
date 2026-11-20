@@ -41,6 +41,11 @@ export function useHabitsState(repository: HabitRepository) {
     id: number;
   }>();
   const recordId = useRef(0);
+  const [orderError, setOrderError] = useState<string>();
+  const orderRevision = useRef(0);
+  const orderWrites = useRef<Promise<void>>(Promise.resolve());
+  // Last order the server accepted in this session (undefined: as loaded).
+  const savedOrder = useRef<string[] | undefined>(undefined);
   const recordTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [today, setToday] = useState(getToday);
   const [attempt, setAttempt] = useState(0);
@@ -102,6 +107,52 @@ export function useHabitsState(repository: HabitRepository) {
     const habit = await repository.create({ name: normalizeHabitName(name) });
     animateHabitListChange();
     updateHabits((current) => [...current, { ...habit, completedDates: [] }]);
+  }
+
+  /** Moves a habit on the Home right away, then saves the whole order.
+   * Saves run one at a time; if the latest one fails, the list goes back
+   * to the last order the server accepted. */
+  function moveHabit(from: number, to: number) {
+    const current = history.current;
+    if (
+      from === to ||
+      from < 0 ||
+      to < 0 ||
+      from >= current.length ||
+      to >= current.length
+    )
+      return;
+    const previousIds = current.map((habit) => habit.id);
+    const next = [...current];
+    const [moved] = next.splice(from, 1);
+    next.splice(to, 0, moved);
+    updateHabits(() => next);
+    setOrderError(undefined);
+
+    const ids = next.map((habit) => habit.id);
+    const revision = ++orderRevision.current;
+    orderWrites.current = orderWrites.current
+      .catch(() => {})
+      .then(async () => {
+        try {
+          await repository.reorder(ids);
+          savedOrder.current = ids;
+        } catch {
+          if (revision !== orderRevision.current) return;
+          const restore = savedOrder.current ?? previousIds;
+          const rank = new Map(restore.map((id, index) => [id, index]));
+          updateHabits((list) =>
+            [...list].sort(
+              (a, b) =>
+                (rank.get(a.id) ?? Number.MAX_SAFE_INTEGER) -
+                (rank.get(b.id) ?? Number.MAX_SAFE_INTEGER),
+            ),
+          );
+          setOrderError(
+            'Não foi possível salvar a nova ordem. Tente novamente.',
+          );
+        }
+      });
   }
 
   async function updateHabit(id: string, name: string) {
@@ -246,6 +297,8 @@ export function useHabitsState(repository: HabitRepository) {
   }
 
   return {
+    moveHabit,
+    orderError,
     importHabits,
     habits,
     loading,

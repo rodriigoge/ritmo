@@ -9,7 +9,7 @@ O Ritmo tem uma interface minimalista em traço preto e branco, com o Pingo, o m
 <p align="center">
   <img src="docs/screenshots/sign-up.png" alt="Cadastro com o Pingo acenando, login com Google e formulário de nome, e-mail e senha" width="200" />
   &nbsp;
-  <img src="docs/screenshots/home.jpg" alt="Home com saudação, progresso do dia e cards de hábitos com os últimos seis dias" width="200" />
+  <img src="docs/screenshots/home.jpg" alt="Home com saudação e cards de hábitos com os últimos seis dias" width="200" />
   &nbsp;
   <img src="docs/screenshots/habit-details.jpg" alt="Detalhes do hábito com cards de dias concluídos, sequência e porcentagem, e calendário do mês" width="200" />
   &nbsp;
@@ -22,7 +22,7 @@ O Ritmo tem uma interface minimalista em traço preto e branco, com o Pingo, o m
 
 - **Onboarding e conta:** três telas de boas-vindas na primeira abertura, cadastro e login por e-mail ou com Google, confirmação de e-mail e recuperação de senha.
 - **Registro em um toque:** marque ou desmarque os últimos seis dias direto na Home, com um check desenhado, um pequeno "pop" e confetes ao concluir o dia de hoje ou bater um recorde.
-- **Progresso do dia:** a Home mostra quantos hábitos você já fez hoje.
+- **Ordem do seu jeito:** segure o ícone de pontinhos de um card e arraste para reorganizar a lista; a ordem fica salva na sua conta.
 - **Detalhes do hábito:** dias concluídos, sequência atual, porcentagem de conclusão, melhor sequência e um calendário para corrigir qualquer dia do histórico.
 - **Perfil:** foto do Google, editar nome, excluir conta (com todos os dados) e sair.
 - **Tema claro e escuro:** escolha Claro, Escuro ou Sistema; a preferência fica salva no celular.

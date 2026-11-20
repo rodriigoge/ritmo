@@ -8,6 +8,7 @@ export type Database = {
           id: string;
           user_id: string;
           name: string;
+          position: number;
           created_at: string;
           updated_at: string;
         };
@@ -15,6 +16,7 @@ export type Database = {
           id?: string;
           user_id?: string;
           name: string;
+          position?: number;
           created_at?: string;
           updated_at?: string;
         };
@@ -22,6 +24,7 @@ export type Database = {
           id?: string;
           user_id?: string;
           name?: string;
+          position?: number;
           created_at?: string;
           updated_at?: string;
         };
@@ -65,6 +68,10 @@ export type Database = {
       toggle_habit_completion: {
         Args: { p_habit_id: string; p_date: string };
         Returns: boolean;
+      };
+      reorder_habits: {
+        Args: { p_ids: string[] };
+        Returns: undefined;
       };
       delete_own_account: {
         Args: Record<string, never>;

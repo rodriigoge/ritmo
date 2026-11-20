@@ -22,7 +22,8 @@ export type ImportResult = {
 
 export interface HabitRepository {
   findAll(): Promise<Habit[]>;
-  /** All habits with their completed dates, ascending, in one request. */
+  /** All habits in the user's order, with their completed dates ascending,
+   * in one request. */
   findAllWithCompletedDates(): Promise<HabitWithCompletedDates[]>;
   findById(id: string): Promise<Habit | null>;
   create(input: CreateHabitInput): Promise<Habit>;
@@ -38,4 +39,6 @@ export interface HabitRepository {
   /** Adds habits from an import. A habit whose name matches an existing
    * one (ignoring case) is merged into it instead of duplicated. */
   importHabits(habits: readonly ImportHabitInput[]): Promise<ImportResult>;
+  /** Saves the Home order: every habit id, first to last. */
+  reorder(ids: readonly string[]): Promise<void>;
 }

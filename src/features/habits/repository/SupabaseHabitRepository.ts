@@ -76,6 +76,7 @@ export class SupabaseHabitRepository implements HabitRepository {
     const { data, error } = await this.client
       .from('habits')
       .select(HABIT_COLUMNS)
+      .order('position')
       .order('created_at')
       .order('id');
     if (error) fail(error);
@@ -86,6 +87,7 @@ export class SupabaseHabitRepository implements HabitRepository {
     const { data, error } = await this.client
       .from('habits')
       .select(`${HABIT_COLUMNS}, habit_completions(date)`)
+      .order('position')
       .order('created_at')
       .order('id')
       .order('date', { referencedTable: 'habit_completions' });
@@ -171,6 +173,13 @@ export class SupabaseHabitRepository implements HabitRepository {
     });
     if (error) fail(error);
     return data;
+  }
+
+  async reorder(ids: readonly string[]): Promise<void> {
+    const { error } = await this.client.rpc('reorder_habits', {
+      p_ids: [...ids],
+    });
+    if (error) fail(error);
   }
 
   async importHabits(

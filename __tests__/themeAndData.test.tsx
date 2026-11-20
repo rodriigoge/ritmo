@@ -83,6 +83,7 @@ describe('Profile data options', () => {
           onEditProfile={jest.fn()}
           onDeleteAccount={jest.fn()}
           onTheme={onTheme}
+          onHomeLayout={jest.fn()}
           onNotifications={jest.fn()}
           onExport={onExport}
           onImport={onImport}

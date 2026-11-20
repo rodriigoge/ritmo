@@ -129,6 +129,17 @@ export class InMemoryHabitRepository implements HabitRepository {
     return true;
   }
 
+  async reorder(ids: readonly string[]): Promise<void> {
+    const rank = new Map(ids.map((id, index) => [id, index]));
+    // Like the SQL: unknown ids are ignored, unlisted habits keep their place
+    // after the listed ones.
+    this.habits = [...this.habits].sort(
+      (a, b) =>
+        (rank.get(a.id) ?? Number.MAX_SAFE_INTEGER) -
+        (rank.get(b.id) ?? Number.MAX_SAFE_INTEGER),
+    );
+  }
+
   async importHabits(
     habits: readonly ImportHabitInput[],
   ): Promise<ImportResult> {

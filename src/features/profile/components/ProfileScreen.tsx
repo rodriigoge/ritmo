@@ -6,6 +6,7 @@ import {
   BellIcon,
   ExportIcon,
   ImportIcon,
+  LayoutIcon,
   PencilIcon,
   SignOutIcon,
   ThemeIcon,
@@ -23,6 +24,10 @@ import {
 } from '../../../design-system/theme/ThemeProvider';
 import { THEME_LABELS } from './ThemeScreen';
 import { useReminders } from '../../reminders/RemindersProvider';
+import {
+  HOME_LAYOUT_LABELS,
+  useHomeLayout,
+} from '../../habits/homeLayout/HomeLayoutProvider';
 import { formatReminderTime } from '../../reminders/reminderSettings';
 import { spacing } from '../../../design-system/tokens/spacing';
 import {
@@ -39,6 +44,7 @@ export function ProfileScreen({
   onEditProfile,
   onDeleteAccount,
   onTheme,
+  onHomeLayout,
   onNotifications,
   onExport,
   onImport,
@@ -48,6 +54,7 @@ export function ProfileScreen({
   onBack: () => void;
   onEditProfile: () => void;
   onTheme: () => void;
+  onHomeLayout: () => void;
   onNotifications: () => void;
   onDeleteAccount: () => void;
   onExport: () => void;
@@ -60,6 +67,7 @@ export function ProfileScreen({
   const colors = useColors();
   const { preference } = useTheme();
   const { settings: reminder } = useReminders();
+  const { layout } = useHomeLayout();
   const { user, signOut } = useAuth();
   const [signingOut, setSigningOut] = useState(false);
   const [error, setError] = useState<string>();
@@ -98,6 +106,12 @@ export function ProfileScreen({
             value={THEME_LABELS[preference]}
             icon={<ThemeIcon size={20} />}
             onPress={onTheme}
+          />
+          <OptionRow
+            label="Layout da Home"
+            value={HOME_LAYOUT_LABELS[layout]}
+            icon={<LayoutIcon size={20} />}
+            onPress={onHomeLayout}
           />
           <OptionRow
             label="Notificações"
