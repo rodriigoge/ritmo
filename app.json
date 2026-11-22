@@ -43,7 +43,7 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon/adaptive-foreground.png",
         "monochromeImage": "./assets/icon/adaptive-monochrome.png",
-        "backgroundColor": "#FFFFFF"
+        "backgroundColor": "#121512"
       }
     },
     "extra": {
